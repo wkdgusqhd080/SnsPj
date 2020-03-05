@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+   <typeAliases>
+   	   <typeAlias alias="Member" type="sns.domain.Member"/>
+   	   <typeAlias alias="Mail_Auth" type="sns.domain.Mail_Auth"/>
+   	   <typeAlias alias="Follow" type="sns.domain.Follow"/>
+   	   <typeAlias alias="Board" type="sns.domain.Board"/>
+   	   <typeAlias alias="Board_File" type="sns.domain.Board_File"/>
+   	   <typeAlias alias="Board_Like" type="sns.domain.Board_Like"/>
+   	   <typeAlias alias="Board_Reply" type="sns.domain.Board_Reply"/>
+   </typeAliases>
+   
+   <mappers>
+   	   <mapper resource="sns/join/mapper/JoinMapper.xml"/>
+   	   <mapper resource="sns/login/mapper/LoginMapper.xml"/>
+   	   <mapper resource="sns/board/mapper/BoardMapper.xml"/>
+   </mappers>
+   
+</configuration>
