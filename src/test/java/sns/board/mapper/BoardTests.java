@@ -1,6 +1,6 @@
 package sns.board.mapper;
 
-import java.util.ArrayList;
+import java.util.*;
 
 import java.util.List;
 
@@ -12,7 +12,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import lombok.extern.log4j.Log4j;
 import sns.domain.Board;
-
+import sns.domain.Board_File;
+import sns.domain.Board_Reply;
+import sns.vo.BoardPagingVo;
 @Log4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
@@ -115,21 +117,37 @@ public class BoardTests {
 	*/
 	@Test
 	public void boardTest() {
+		long cp = 1;
+		long ps = 3;
 		String mem_email = "a@naver.com";
-		
-		List<List<Board>> boardList = new ArrayList<List<Board>>();
-		
-		List<String> followList = mapper.selectFollow(mem_email);
-		
-		
-		for(String follower : followList) {
-			List<Board> bList = mapper.selectBoard(follower);
-			boardList.add(bList);
+		BoardPagingVo boardPagingVo = new BoardPagingVo(cp, ps);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mem_email", mem_email);
+		map.put("startRow", boardPagingVo.getStartRow());
+		map.put("endRow", boardPagingVo.getEndRow());
+
+		List<Board> boardList = new ArrayList<Board>();
+		boardList = mapper.selectBoard(map);
+		List<List<Board_File>> board_file_List = new ArrayList<List<Board_File>>();
+		//List<List<Board_Reply>> board_reply_List = new ArrayList<List<Board_Reply>>();
+
+			if(boardList.size() != 0) {
+				for(Board b : boardList) {
+					List<Board_File> board_file_list = mapper.selectBoardFile(b.getB_seq());
+						if(board_file_list.size() != 0) {
+							board_file_List.add(board_file_list);
+						}
+					/*
+					List<Board_Reply> board_reply_list = mapper.selectBoardReply(map);
+						if(board_reply_list.size() != 0) {
+							board_reply_List.add(board_reply_list);
+						}
+					*/	
+				}
+			}	
+				log.info("#boardList: " + boardList);
+				log.info("#board_file_List: " + board_file_List);
+				//log.info("#board_reply_List: " + board_reply_List);
 		}
 		
-		log.info("#boardList: " + boardList);
-		
-		
-		
 	}
-}

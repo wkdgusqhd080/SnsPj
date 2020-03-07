@@ -3,15 +3,9 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sns.board.mapper.BoardMapper">
-	<select id="selectFollow" parameterType="String" resultType="String">
+	<select id="selectBoard" parameterType="hashmap" resultType="Board">
 		<![CDATA[
-	 		SELECT FLR_EMAIL FROM FOLLOW WHERE MEM_EMAIL = #{mem_email}
-	 	]]>
-	</select>
-	
-	<select id="selectBoard" parameterType="String" resultType="Board">
-		<![CDATA[
-			SELECT * FROM BOARD WHERE MEM_EMAIL = #{mem_email} ORDER BY B_RDATE
+			select * from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
 		]]>
 	</select>
 	
@@ -21,10 +15,30 @@
 		]]>
 	</select>
 	
-	<select id="selectBoardReply" parameterType="long" resultType="Board_Reply">
+	<select id="selectBoardReply" parameterType="hashmap" resultType="Board_Reply">
 		<![CDATA[
-			SELECT * FROM REPLY WHERE B_SEQ #{b_seq} ORDER BY BRP_RDATE
+			select * from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = #{b_seq}) br) where rnum > #{startRow} and rnum <= #{endRow} order by BRP_RDATE desc
 		]]>
+	</select>
+	
+	<select id="selectMemberProfile" parameterType="String" resultType="String">
+		<![CDATA[
+			SELECT MEM_PROFILE FROM MEMBER WHERE MEM_EMAIL = #{mem_email}
+		]]>
+	</select>
+	
+	<select id="selectBoardTotalCount" parameterType="String" resultType="long">
+	<![CDATA[
+	select count(*) from BOARD where mem_email in (select flr_email from follow where mem_email = #{mem_email}) order by b_rdate desc
+	]]>
+	</select>
+	
+	<select id="selectBoardLikeCount" parameterType="long" resultType="long">
+		select count(*) from BOARD_LIKE where B_SEQ = #{b_seq}
+	</select>
+	
+	<select id="selectBoardLike" parameterType="long" resultType="Board_Like">
+		select * from BOARD_LIKE where B_SEQ = #{b_seq}
 	</select>
 	
 </mapper>

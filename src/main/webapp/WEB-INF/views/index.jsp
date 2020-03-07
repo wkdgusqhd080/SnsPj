@@ -52,7 +52,7 @@
 						<input type="checkbox">Remember Me
 					</div>
 					<div class="form-group">
-						<input type="button" id="loginBtn" value="Login" class="btn float-right login_btn">
+						<input type="button" id="loginBtn" value="Login" class="btn float-right login_btn" onclick="loginSubmit()">
 					</div>
 				</form>
 			</div>
@@ -71,22 +71,36 @@
 	</div>
 </div>
 <script>
-$(document).ready(function(){
-	$("#loginBtn").on('click', function(){
-		var mem_email = $("#mem_email").val();
-		var mem_pwd = $("#mem_pwd").val();
-		
-		if(mem_email.length == 0) {
-			alert("이메일을 입력해주세요.");
-			$("#mem_email").focus();
-			return;
+
+
+function loginSubmit() {
+	var mem_email = $("#mem_email").val();
+	var mem_pwd = $("#mem_pwd").val();
+	
+	if(mem_email.length == 0) {
+		alert("이메일을 입력해주세요.");
+		$("#mem_email").focus();
+		return;
+	}
+	if(mem_pwd.length == 0) {
+		alert("비밀번호를 입력해주세요.");
+		$("#mem_pwd").focus();
+		return;
+	}
+	f.submit();	
+}
+
+$(document).ready(function(){	
+	
+	$("#mem_email").on('keyup', function(){
+		if(window.event.keyCode == 13) {
+			loginSubmit();
 		}
-		if(mem_pwd.length == 0) {
-			alert("비밀번호를 입력해주세요.");
-			$("#mem_pwd").focus();
-			return;
+	});
+	$("#mem_pwd").on('keyup', function(){
+		if(window.event.keyCode == 13) {
+			loginSubmit();
 		}
-		f.submit();
 	});
 	
 });

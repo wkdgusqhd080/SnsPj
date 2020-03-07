@@ -1,12 +1,19 @@
 package sns.board.mapper;
 
 import java.util.List;
+import java.util.Map;
 
 import sns.domain.Board;
 import sns.domain.Board_File;
+import sns.domain.Board_Like;
+import sns.domain.Board_Reply;
 
 public interface BoardMapper {
-	List<String> selectFollow(String mem_email);
-	List<Board> selectBoard(String mem_email);
+	List<Board> selectBoard(Map map);
 	List<Board_File> selectBoardFile(long b_seq);
+	List<Board_Reply> selectBoardReply(Map map);
+	String selectMemberProfile(String mem_email);
+	long selectBoardTotalCount(String mem_email);
+	long selectBoardLikeCount(long b_seq);
+	List<Board_Like> selectBoardLike(long b_seq);
 }
