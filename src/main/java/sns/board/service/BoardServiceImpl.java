@@ -65,4 +65,10 @@ public class BoardServiceImpl implements BoardService {
 		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
 	}
 
+	@Override
+	public boolean likePlusMinus(long b_seq, String mem_email, String cmd) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
 }

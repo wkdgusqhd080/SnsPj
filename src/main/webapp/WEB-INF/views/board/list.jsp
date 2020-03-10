@@ -1,6 +1,12 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ page contentType="text/html; charset=utf-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate var="today" value="${now}" pattern="yyyy-MM-dd HH:mm:ss"/>
+
+
 <!DOCTYPE html>
 <head>
 
@@ -34,9 +40,10 @@
         
         <c:if test="${empty loginUser}">
         	<script>
-        		location.href="127.0.0.1:8080/index.jsp";
+        		location.href="/login/logout.do";
         	</script>
         </c:if>
+        
 </head>
 
 		<!--[if IE 7]>
@@ -83,7 +90,12 @@
 				   <div class="media-body">
 				    <p class="m-0">${board.mem_email}</p>
 					<!--  <small><span><i class="icon ion-md-pin"></i> Nairobi, Kenya</span></small>-->
-					<small><span><i class="icon ion-md-time"></i> 10 hours ago</span></small>
+					
+
+					<small><span><i class="icon ion-md-time"></i>${board.b_rdate}</span></small>
+					
+					
+					
 				   </div>
 				  </div><!--/ media -->
 				 </div><!--/ cardbox-heading -->
@@ -100,7 +112,7 @@
 					</ul>
 				 </c:if>
 				  
-				  <div>${board.b_content}</div>
+				  <div style="margin-left:5%;">${board.b_content}</div>
 				 </div><!--/ cardbox-item --> 
 				
 				 <div class="cardbox-base">
@@ -108,30 +120,33 @@
 				 
 				 <c:choose>
 				 <c:when test="${fn:contains(board.board_like_list, loginUser.mem_email)}">
-				  <a style="margin:0%; margin-top:1%;float:right;width:50px; height:50px;background-position:99.9992% 0px" id="heart${board.b_seq}" class="heart" onclick="heartPlus(this);"></a>
+				  <a style="margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:99.9992% 0px" b_seq="${board.b_seq}" class="heart" onclick="heartPlus(this);"></a>
 				 </c:when>
 				 <c:otherwise>
-				  <a style="margin:0%; margin-top:1%;float:right;width:50px; height:50px;background-position:0px" id="heart${board.b_seq}" class="heart" onclick="heartPlus(this);"></a>
+				  <a style="margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:0px" b_seq="${board.b_seq}" class="heart" onclick="heartPlus(this);"></a>
 				 </c:otherwise>
 				 </c:choose>
 				  <ul class="float-right">
 
 				   <li><a><i class="fa fa-comments"></i></a></li>
 				   <li><a><em class="mr-5">12</em></a></li>
+				   
+				    
 				   <li><a><i class="fa fa-share-alt"></i></a></li>
 				   <li><a><em class="mr-3">03</em></a></li>
+				   
 				  </ul>
 
 				  <ul>
 				   <li><a><i class="fa fa-thumbs-up"></i></a></li>
 				   <c:forEach items="${board.board_like_list}" begin="0" end="2" var="board_like">
-				   <li><a href="#"><img src="/resources/user_profile_images/${board_like.mem_profile}" id="${board_like.mem_email}" class="img-fluid rounded-circle" alt="User"></a></li>
+				   <li><a href="#"><img src="/resources/user_profile_images/${board_like.mem_profile}" id="like_profile${board.b_seq}" class="img-fluid rounded-circle" alt="User"></a></li>
 				   </c:forEach>
 					   <c:if test="${!empty board.board_like_list}">
-					   		<li><a><span>${board.board_like_list.size()} Likes</span></a></li>
+					   		<li><a><span id="like_cnt${board.b_seq}">${board.board_like_list.size()} Likes</span></a></li>
 					   </c:if>
 					   <c:if test="${empty board.board_like_list}">
-					   <li><a><span>0 Likes</span></a></li>
+					   <li><a><span id="like_cnt${board.b_seq}">0 Likes</span></a></li>
 					   </c:if>
 				  </ul>	
 				
@@ -166,50 +181,44 @@
          </div><!--/ container -->
  <script>
  
- 
- 
- 
+
  function heartPlus(obj) {
-	 
+	 var filled = $(obj).css('background-position');
+	 var b_seq = $(obj).attr('b_seq');
+	 if(filled == '99.9992% 0px') {//minus
+		 $(obj).css('background-position', '0px 50%');
+		 
+		 var str = "minus,"+b_seq+",${loginUser.mem_email}";
+		 //console.log(arr);
+		 $.ajax({
+			url: "/board/likeAjax.do",
+			data: { 'str' : JSON.stringify(str)
+					},
+			type: "POST",
+			success: function(data) {
+				console.log(data);
+			},error: function(err) {
+				console.log(err);
+			}
+		 });
+	 }else {//plus
+		 $(obj).css('background-position', '99.9992% 0px');
+		 
+	 }
  }
    
    
    
     $(document).ready(function(){
+    	
       $('.slider').bxSlider();
       
       
       $("#btn_logout").on('click', function(){
-    	  //$('.heart').css('background-position', '99.9992% 0px');
+    	 location.href="/login/logout.do";
       });
 
-      <%--
-      $('.heart').click(function(){},function(){
-        if(heart && !animating){
-          $('.heart').css('background-position','0 0');
-          heart = false;
-        }else if(!animating){
-          animating = true;
-          animate();
-        }
-      });
 
-      function animate(){
-        cycle = setInterval(increment,30);
-      }
-
-      function increment(){
-        pos += dpos;
-        if(pos > 100){
-          clearInterval(cycle);
-          heart = true;
-          animating = false;
-          pos = 0;
-        }else{
-          $('.heart').css('background-position',pos+'% 0');
-        }
-      }
-      --%>
 
    });
 
