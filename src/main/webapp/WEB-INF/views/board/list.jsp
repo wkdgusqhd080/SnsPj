@@ -34,8 +34,10 @@
  <link href="/css/btn_like2.css" rel="stylesheet">
 
         <c:if test="${!empty loginUser}">
+        	<div style="float:right;">
         	안녕하세요. ${loginUser.mem_email}님
-        <input type="button" id="btn_logout" value="logout"/>
+        	<input type="button" id="btn_logout" value="logout"/>
+        	</div>
         </c:if>
         
         <c:if test="${empty loginUser}">
@@ -128,7 +130,7 @@
 				 </c:choose>
 				  <ul class="float-right">
 
-				   <li><a><i class="fa fa-comments"></i></a></li>
+				   <li><a><i class="fa fa-comments" value="false" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
 				   <li><a><em class="mr-5">12</em></a></li>
 				   
 				    
@@ -136,25 +138,34 @@
 				   <li><a><em class="mr-3">03</em></a></li>
 				   
 				  </ul>
-
-				  <ul>
-				   <li><a><i class="fa fa-thumbs-up"></i></a></li>
+				  
+				  <ul id="ul${board.b_seq}">
+				   <%-- <li><a><i class="fa fa-thumbs-up"></i></a></li>--%>
+				   
 				   <c:forEach items="${board.board_like_list}" begin="0" end="2" var="board_like">
-				   <li><a href="#"><img src="/resources/user_profile_images/${board_like.mem_profile}" id="like_profile${board.b_seq}" class="img-fluid rounded-circle" alt="User"></a></li>
+				   <li id="like_${board.b_seq}_${board_like.mem_email}"><a href="#"><img src="/resources/user_profile_images/${board_like.mem_profile}" class="img-fluid rounded-circle" alt="User"></a></li>
 				   </c:forEach>
+				   
 					   <c:if test="${!empty board.board_like_list}">
 					   		<li><a><span id="like_cnt${board.b_seq}">${board.board_like_list.size()} Likes</span></a></li>
 					   </c:if>
+					   
 					   <c:if test="${empty board.board_like_list}">
-					   <li><a><span id="like_cnt${board.b_seq}">0 Likes</span></a></li>
+					  		<li><a><span id="like_cnt${board.b_seq}">0 Likes</span></a></li>
 					   </c:if>
+					   
 				  </ul>	
-				
+
 				 </div><!--/ cardbox-base -->
+				 
+				 <div id="comment_${board.b_seq}" style="display:none;">
+				  댓글 들어갈곳
+				 </div>
+				 
 				 
 				 <div class="cardbox-comments">
 				  <span class="comment-avatar float-left">
-				   <a href=""><img class="rounded-circle" src="/resources/user_profile_images/${loginUser.mem_profile}" alt="..."></a>                            
+				   <a><img class="rounded-circle" src="/resources/user_profile_images/${loginUser.mem_profile}" alt="..."></a>                            
 				  </span>
 				  <div class="search">
 				   <input placeholder="Write a comment" type="text">
@@ -181,29 +192,77 @@
          </div><!--/ container -->
  <script>
  
+ 
+ function showComment(obj) {
+	 var c_seq = $(obj).attr('c_seq');
+	 var flag = $(obj).attr('value');
+	 
+	 if(flag == 'false') {
+		 $('#'+c_seq).css('display', 'block');
+		 console.log(flag);
+		 $(obj).attr('value', 'true');
+	 }else {
+		 $('#'+c_seq).css('display', 'none');
+		 console.log(flag);
+		 $(obj).attr('value', 'false');
+	 }
+	 
+	
+	 
+	 
+	 
+	 
+ }
+ 
+ 
+ function likeAjax(cmd, obj) {
+	 var b_seq = $(obj).attr('b_seq');
+	 var str = { 'str' : cmd+","+b_seq+",${loginUser.mem_email}" };
+	 $.ajax({
+			url: "/board/likeAjax.do",
+			data: str,
+			type: "POST",
+			dataType: "json",
+			success: function(data) {
+				console.log(data); //console.log("cnt: " + data.board_like_count);
+				$("#like_cnt"+b_seq).text(data.board_like_count+" Likes");
+				var ul = document.getElementById('ul'+b_seq);
+				//console.log(ul);
+				if(cmd == 'minus') {
+					var li = document.getElementById('like_'+b_seq+'_${loginUser.mem_email}');
+					if (li != null) li.parentNode.removeChild(li);
+				}else if(cmd == 'plus') {
+					$(ul).each(function(){
+						if($('li', this ).length <= 3) {//console.log('되나요');
+							var str = "";
+							str += "<li id='like_"+b_seq+"_${loginUser.mem_email}'>";
+							str += "<a href='#'>";
+							str += "<img src='/resources/user_profile_images/${loginUser.mem_profile}' class='img-fluid rounded-circle' alt='User'>";
+							str += "</a>"
+							str += "</li>";
+							$(ul).prepend(str);
+						}
+					});
+				}
+				
+				
+				
+			},error: function(err) {
+				console.log(err);
+			}
+		 });
+ }
+ 
 
  function heartPlus(obj) {
 	 var filled = $(obj).css('background-position');
 	 var b_seq = $(obj).attr('b_seq');
 	 if(filled == '99.9992% 0px') {//minus
 		 $(obj).css('background-position', '0px 50%');
-		 
-		 var str = "minus,"+b_seq+",${loginUser.mem_email}";
-		 //console.log(arr);
-		 $.ajax({
-			url: "/board/likeAjax.do",
-			data: { 'str' : JSON.stringify(str)
-					},
-			type: "POST",
-			success: function(data) {
-				console.log(data);
-			},error: function(err) {
-				console.log(err);
-			}
-		 });
+	 	 likeAjax('minus', obj);
 	 }else {//plus
 		 $(obj).css('background-position', '99.9992% 0px');
-		 
+	 	 likeAjax('plus', obj);
 	 }
  }
    
@@ -213,12 +272,9 @@
     	
       $('.slider').bxSlider();
       
-      
       $("#btn_logout").on('click', function(){
     	 location.href="/login/logout.do";
       });
-
-
 
    });
 

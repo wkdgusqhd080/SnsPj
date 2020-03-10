@@ -13,6 +13,7 @@ import sns.board.mapper.BoardMapper;
 import sns.domain.Board;
 import sns.domain.Board_File;
 import sns.domain.Board_Like;
+import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
 import sns.vo.BoardPagingVo;
 
@@ -66,9 +67,28 @@ public class BoardServiceImpl implements BoardService {
 	}
 
 	@Override
-	public boolean likePlusMinus(long b_seq, String mem_email, String cmd) {
-		// TODO Auto-generated method stub
-		return false;
+	public BoardLikeVo likePlusMinus(long b_seq, String mem_email, String cmd) {
+		Board_Like board_like = new Board_Like(mem_email, b_seq, null);
+		if(cmd.equals("minus")) {//minus
+			boardMapper.deleteBoardLike(board_like);
+			return getBoardLikeVo(b_seq);
+		}else if(cmd.equals("plus")){//plus
+			boardMapper.insertBoardLike(board_like);
+			return getBoardLikeVo(b_seq);
+		}else {
+			return getBoardLikeVo(b_seq);
+		}
 	}
+	
+	private BoardLikeVo getBoardLikeVo(long b_seq) {
+		long board_like_count = boardMapper.selectBoardLikeCount(b_seq);
+		List<Board_Like> board_like_list = boardMapper.selectBoardLike(b_seq);
+		for(Board_Like board_like : board_like_list) {
+			String board_like_mem_profile = boardMapper.selectMemberProfile(board_like.getMem_email());
+			board_like.setMem_profile(board_like_mem_profile);
+		}
+		return new BoardLikeVo(b_seq, board_like_count, board_like_list);
+	}
+	
 
 }

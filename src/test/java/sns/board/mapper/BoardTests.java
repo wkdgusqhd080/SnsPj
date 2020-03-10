@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import lombok.extern.log4j.Log4j;
 import sns.domain.Board;
 import sns.domain.Board_File;
+import sns.domain.Board_Like;
 import sns.domain.Board_Reply;
 import sns.vo.BoardPagingVo;
 @Log4j
@@ -115,6 +116,7 @@ public class BoardTests {
 		//log.info("#str: " + str);
 	}
 	*/
+	/*
 	@Test
 	public void boardTest() {
 		long cp = 1;
@@ -142,12 +144,30 @@ public class BoardTests {
 						if(board_reply_list.size() != 0) {
 							board_reply_List.add(board_reply_list);
 						}
-					*/	
+					
 				}
 			}	
 				log.info("#boardList: " + boardList);
 				log.info("#board_file_List: " + board_file_List);
 				//log.info("#board_reply_List: " + board_reply_List);
 		}
+		*/
+		
+	@Test
+	public void boardLikeTest() {
+		String mem_email = "a@naver.com";
+		long b_seq = 5;
+		Board_Like board_like = new Board_Like(mem_email, b_seq, null);
+		Board_Like b_like = mapper.selectBoardLikeUser(board_like);
+		
+		if(b_like != null) {//게시글에 좋아요 있을 경우
+			mapper.deleteBoardLike(board_like);
+		}else {//게시글에 좋아요 없을 경우
+			mapper.insertBoardLike(board_like);
+		}
+		//mapper.deleteBoardLike(board_like);
+		
+	}
+	
 		
 	}

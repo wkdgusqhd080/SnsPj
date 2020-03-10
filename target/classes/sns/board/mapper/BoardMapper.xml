@@ -41,4 +41,23 @@
 		select * from BOARD_LIKE where B_SEQ = #{b_seq}
 	</select>
 	
+	
+	<select id="selectBoardLikeUser" parameterType="Board_Like" resultType="Board_Like">
+		select * from BOARD_LIKE where B_SEQ = #{b_seq} and MEM_EMAIL = #{mem_email}
+	</select>
+	
+	<insert id="insertBoardLike" parameterType="Board_Like">
+		<![CDATA[
+		INSERT INTO BOARD_LIKE (MEM_EMAIL, B_SEQ) VALUES (#{mem_email}, #{b_seq})
+		]]>
+	</insert>
+	
+	<delete id="deleteBoardLike" parameterType="Board_Like">
+		<![CDATA[
+		DELETE FROM BOARD_LIKE WHERE MEM_EMAIL = #{mem_email} AND B_SEQ = #{b_seq}
+		]]>
+	</delete>
+	
+	
+	
 </mapper>

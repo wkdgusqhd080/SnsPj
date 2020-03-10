@@ -19,6 +19,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
 import sns.board.service.BoardService;
 import sns.domain.Member;
+import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
 import sns.vo.BoardPagingVo;
 
@@ -42,23 +43,13 @@ public class BoardController {
 	
 	@PostMapping("likeAjax.do")
 	@ResponseBody
-	public String likeAjax(String str) {
+	public BoardLikeVo likeAjax(String str) {
 		String[] strs = str.split(",");
 		String cmd = strs[0];
 		String b_seqStr = strs[1]; long b_seq = Integer.parseInt(b_seqStr);
-		String mem_email = strs[2];
-		if(cmd.equals("minus")) {//minus
-			
-		}else {//plus
-			
-		}
-		
-		
-		
-		
-		
-		
-		return "";
+		String mem_email = strs[2]; //log.info("#cmd: " + cmd);
+		BoardLikeVo boardLikeVo = boardService.likePlusMinus(b_seq, mem_email, cmd);
+		return boardLikeVo;
 	}
 	
 }

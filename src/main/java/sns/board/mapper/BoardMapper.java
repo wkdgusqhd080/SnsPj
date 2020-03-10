@@ -16,4 +16,7 @@ public interface BoardMapper {
 	long selectBoardTotalCount(String mem_email);
 	long selectBoardLikeCount(long b_seq);
 	List<Board_Like> selectBoardLike(long b_seq);
+	Board_Like selectBoardLikeUser(Board_Like board_like);
+	void insertBoardLike(Board_Like board_like);
+	void deleteBoardLike(Board_Like board_like);
 }
