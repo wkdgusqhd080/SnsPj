@@ -18,6 +18,7 @@
    	   <mapper resource="sns/join/mapper/JoinMapper.xml"/>
    	   <mapper resource="sns/login/mapper/LoginMapper.xml"/>
    	   <mapper resource="sns/board/mapper/BoardMapper.xml"/>
+   	   <mapper resource="sns/board/mapper/BoardRestMapper.xml"/>
    </mappers>
    
 </configuration>

@@ -13,4 +13,5 @@ public class Board_Reply {
 	private java.sql.Date brp_rdate;
 	private String mem_email;
 	private long b_seq;
+	private String mem_profile;//vo
 }

@@ -25,13 +25,9 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
 
-
-<%--좋아요버튼css
-<link href="/css/btn_like.css" rel="stylesheet">
- --%>
  
  <%--좋아요버튼css2--%>
- <link href="/css/btn_like2.css" rel="stylesheet">
+ <link href="/css/btn_like.css" rel="stylesheet">
 
         <c:if test="${!empty loginUser}">
         	<div style="float:right;">
@@ -130,7 +126,7 @@
 				 </c:choose>
 				  <ul class="float-right">
 
-				   <li><a><i class="fa fa-comments" value="false" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
+				   <li><a><i class="fa fa-comments" value="false" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
 				   <li><a><em class="mr-5">12</em></a></li>
 				   
 				    
@@ -195,23 +191,29 @@
  
  function showComment(obj) {
 	 var c_seq = $(obj).attr('c_seq');
+	 var b_seq = $(obj).attr('b_seq');
 	 var flag = $(obj).attr('value');
 	 
-	 if(flag == 'false') {
-		 $('#'+c_seq).css('display', 'block');
-		 console.log(flag);
+	 if(flag == 'false') {//댓글 보이기
+		 
+		 $.ajax({
+			 url:"/board_rest/list/"+b_seq,
+			 dataType: "json",
+			 success: function(data) {
+				 console.log(data);
+			 },error: function(err) {
+				 console.log(err);
+			 }
+		 });
+		 
+		 
+		 $('#'+c_seq).css('display', 'block'); //console.log(flag);
 		 $(obj).attr('value', 'true');
-	 }else {
-		 $('#'+c_seq).css('display', 'none');
-		 console.log(flag);
+	 }else {//댓글 가리기
+		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
 		 $(obj).attr('value', 'false');
 	 }
-	 
-	
-	 
-	 
-	 
-	 
+	 	 
  }
  
  
@@ -244,9 +246,6 @@
 						}
 					});
 				}
-				
-				
-				
 			},error: function(err) {
 				console.log(err);
 			}
@@ -270,7 +269,9 @@
    
     $(document).ready(function(){
     	
-      $('.slider').bxSlider();
+      $('.slider').bxSlider({
+    	  controls: false
+      });
       
       $("#btn_logout").on('click', function(){
     	 location.href="/login/logout.do";

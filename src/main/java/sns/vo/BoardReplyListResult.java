@@ -6,22 +6,23 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import sns.domain.Board;
 //import sns.domain.Board_File;
+import sns.domain.Board_Reply;
 
 @Data
 @NoArgsConstructor
-public class BoardListResult {
+public class BoardReplyListResult {
 	private long currentPage;
 	private long pageSize;
 	private long totalCount;
 	private long totalPageCount;
-	List<Board> boardList;
-
-	public BoardListResult(long currentPage, long pageSize, long totalCount, List<Board> boardList) {
+	List<Board_Reply> boardReplyList;
+	
+	public BoardReplyListResult(long currentPage, long pageSize, long totalCount, List<Board_Reply> boardReplyList) {
 		this.currentPage = currentPage;
 		this.pageSize = pageSize;
 		this.totalCount = totalCount;
 		this.totalPageCount = calTotalPageCount();
-		this.boardList = boardList;
+		this.boardReplyList = boardReplyList;
 	}
 	
 	public long calTotalPageCount() {

@@ -45,6 +45,7 @@
 		<mybatis-spring:scan base-package="sns.board.mapper"/>
 		
 		
+		
 		<context:annotation-config></context:annotation-config>
 		<context:component-scan base-package="bong.md.aop"/>
 	<aop:aspectj-autoproxy></aop:aspectj-autoproxy>
