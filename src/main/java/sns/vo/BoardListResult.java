@@ -5,7 +5,7 @@ import java.util.List;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import sns.domain.Board;
-import sns.domain.Board_File;
+//import sns.domain.Board_File;
 
 @Data
 @NoArgsConstructor
@@ -15,10 +15,10 @@ public class BoardListResult {
 	private long totalCount;
 	private long totalPageCount;
 	List<Board> boardList;
-	List<List<Board_File>> boardFileList;
+	//List<List<Board_File>> boardFileList;
 
 	
-	
+	/*
 	public BoardListResult(long currentPage, long pageSize, long totalCount, List<Board> boardList, List<List<Board_File>> boardFileList) {
 		this.currentPage = currentPage;
 		this.pageSize = pageSize;
@@ -26,6 +26,14 @@ public class BoardListResult {
 		this.totalPageCount = calTotalPageCount();
 		this.boardList = boardList;
 		this.boardFileList = boardFileList;
+	}
+	*/
+	public BoardListResult(long currentPage, long pageSize, long totalCount, List<Board> boardList) {
+		this.currentPage = currentPage;
+		this.pageSize = pageSize;
+		this.totalCount = totalCount;
+		this.totalPageCount = calTotalPageCount();
+		this.boardList = boardList;
 	}
 	
 	public long calTotalPageCount() {

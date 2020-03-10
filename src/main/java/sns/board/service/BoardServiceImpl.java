@@ -39,31 +39,30 @@ public class BoardServiceImpl implements BoardService {
 			b.setMem_profile(mem_profile);
 			long board_like_count = boardMapper.selectBoardLikeCount(b.getB_seq());
 			b.setBoard_like_count(board_like_count);
-
+			
 			List<Board_Like> board_like_list = boardMapper.selectBoardLike(b.getB_seq());
-			
-			for(Board_Like board_like : board_like_list) {
-				String board_like_mem_profile = boardMapper.selectMemberProfile(board_like.getMem_email());
-				board_like.setMem_profile(board_like_mem_profile);
-			}
-			
-			if(board_like_list.size() != 0) {
-				b.setBoard_like_list(board_like_list);
-			}
-		}
-		
-		List<List<Board_File>> board_file_List = new ArrayList<List<Board_File>>();
-			if(boardList.size() != 0) {
-				for(Board b : boardList) {
-					List<Board_File> board_file_list = boardMapper.selectBoardFile(b.getB_seq());
-						if(board_file_list.size() != 0) {
-							board_file_List.add(board_file_list);
-						}
+				for(Board_Like board_like : board_like_list) {
+					String board_like_mem_profile = boardMapper.selectMemberProfile(board_like.getMem_email());
+					board_like.setMem_profile(board_like_mem_profile);
 				}
-			}
+					if(board_like_list.size() != 0) {
+							b.setBoard_like_list(board_like_list);
+					}
+			List<Board_File> board_file_list = boardMapper.selectBoardFile(b.getB_seq());
+				List<Board_File> board_file_list2 = new ArrayList<Board_File>();
+				
+				for(Board_File board_file : board_file_list) {
+					if(board_file.getB_seq() == b.getB_seq()) {
+						board_file_list2 = board_file_list;
+					}
+				}
+					if(board_file_list2.size() != 0) {
+						b.setBoard_file_list(board_file_list2);
+					}
+				
+		}
 				log.info("#boardList: " + boardList);
-				log.info("#board_file_List: " + board_file_List);
-		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList, board_file_List);
+		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
 	}
 
 }
