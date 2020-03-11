@@ -25,8 +25,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 <script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
 
+<%--폰트 --%>
+<link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
  
- <%--좋아요버튼css2--%>
+ <%--좋아요버튼css--%>
  <link href="/css/btn_like.css" rel="stylesheet">
 
         <c:if test="${!empty loginUser}">
@@ -41,7 +43,14 @@
         		location.href="/login/logout.do";
         	</script>
         </c:if>
-        
+<style>
+@import url('https://fonts.googleapis.com/css?family=Yeon+Sung&display=swap');
+span {
+		font-family: 'Yeon Sung', cursive;
+		font-size: 17px;
+	}
+
+</style>
 </head>
 
 		<!--[if IE 7]>
@@ -110,7 +119,7 @@
 					</ul>
 				 </c:if>
 				  
-				  <div style="margin-left:5%;">${board.b_content}</div>
+				  <div style="margin-left:5%; font-family: 'Yeon Sung', cursive; font-size:20px;">${board.b_content}</div>
 				 </div><!--/ cardbox-item --> 
 				
 				 <div class="cardbox-base">
@@ -154,8 +163,8 @@
 
 				 </div><!--/ cardbox-base -->
 				 
-				 <div id="comment_${board.b_seq}" style="display:none;">
-				  댓글 들어갈곳
+				 <div id="comment_${board.b_seq}" style="display:none; margin-left:8px;margin-right:8px;">
+				 
 				 </div>
 				 
 				 
@@ -188,6 +197,35 @@
          </div><!--/ container -->
  <script>
  
+ Paging = function(cp, ps, totalCount, totalPageCount, b_seq, c_seq) {
+	 cp = parseInt(cp);
+	 ps = parseInt(ps);
+	 totalCount = parseInt(totalCount);
+	 totalPageCount = parseInt(totalPageCount);
+	 
+	 var pagingHtml = '';
+	 
+	 pagingHtml += "<div class='board_paging' align='center'>";
+	 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp=1'>&#x000AB;</button>";
+	 if(cp != 1) pagingHtml += "<button onclick='javascript:location.href='/board_rest/list"+b_seq+"?cp="+(cp-1)+"'>&#x02039;</button>";
+	 
+	 for(var i=1; i<=totalPageCount; i++) {
+		 if(i == cp) {
+			 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+i+"' class='on'><strong>"+i+"</strong></button>";
+		 }else {
+			 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+i+"'>"+i+"</button>";
+		 }
+	 }
+	 
+	 if(cp != totalPageCount) pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+(cp+1)+"'>&#x0203A;</button>";
+	 
+	 pagingHtml += "<button onclick='javascript:location.href=/board_rest/list/"+b_seq+"?cp="+totalPageCount+"'>&#x000BB;</button>";
+
+	 pagingHtml += "</div>";
+	 
+	 return pagingHtml;
+	 
+ }
  
  function showComment(obj) {
 	 var c_seq = $(obj).attr('c_seq');
@@ -197,20 +235,41 @@
 	 if(flag == 'false') {//댓글 보이기
 		 
 		 $.ajax({
-			 url:"/board_rest/list/"+b_seq,
+			 url:"/board_rest/list/"+b_seq+"?cp=1",
 			 dataType: "json",
 			 success: function(data) {
 				 console.log(data);
+				 
+				 if(data.boardReplyList.length != 0) {
+					 $.each(data.boardReplyList, function(index, item) {
+						 var str = '';
+						 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
+						 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
+						 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+						 str += "<br/>";
+						 $('#'+c_seq).append(str);
+					 });
+					 
+					 if(data.totalPageCount != 0) {
+						 if(data.totalPageCount != 1) {
+							 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
+							 $('#'+c_seq).append(pagingHtml);
+						 }
+					 }
+					 
+					 $('#'+c_seq).css('display', 'block'); //console.log(flag);
+					 $(obj).attr('value', 'true'); 
+				 }
+				 //$('#'+c_seq).text(data.totalCount);
+				 
 			 },error: function(err) {
 				 console.log(err);
 			 }
 		 });
-		 
-		 
-		 $('#'+c_seq).css('display', 'block'); //console.log(flag);
-		 $(obj).attr('value', 'true');
+
 	 }else {//댓글 가리기
 		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
+		 $('#'+c_seq).empty();
 		 $(obj).attr('value', 'false');
 	 }
 	 	 

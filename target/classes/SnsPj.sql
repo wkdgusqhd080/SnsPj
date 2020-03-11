@@ -3,6 +3,7 @@ grant resource, connect to sns;
 conn sns/java;
 */
 
+
 delete from BOARD_LIKE;
 delete from BOARD_REPLY;
 delete from BOARD_FILE;
@@ -99,13 +100,15 @@ insert into BOARD_FILE values(1, '颇老1.jpg', '颇老1.jpg', 1000, 5);
 insert into BOARD_FILE values(2, '颇老2,jpg', '颇老2.jpg', 1000, 5);
 insert into BOARD_FILE values(3, '颇老3,jpg', '颇老3.jpg', 1000, 5);
 
-insert into BOARD_FILE values(4, '颇老4.jpg', '颇老1.jpg', 1000, 2);
-insert into BOARD_FILE values(5, '颇老5,jpg', '颇老2.jpg', 1000, 2);
-insert into BOARD_FILE values(6, '颇老6,jpg', '颇老3.jpg', 1000, 2);
+insert into BOARD_FILE values(4, '颇老4.jpg', '颇老4.jpg', 1000, 2);
+insert into BOARD_FILE values(5, '颇老5,jpg', '颇老5.jpg', 1000, 2);
+insert into BOARD_FILE values(6, '颇老6,jpg', '颇老6.jpg', 1000, 2);
 
-insert into BOARD_FILE values(7, '颇老7.jpg', '颇老1.jpg', 1000, 1);
-insert into BOARD_FILE values(8, '颇老8,jpg', '颇老2.jpg', 1000, 1);
-insert into BOARD_FILE values(9, '颇老9,jpg', '颇老3.jpg', 1000, 1);
+insert into BOARD_FILE values(7, '颇老7.jpg', '颇老7.jpg', 1000, 1);
+insert into BOARD_FILE values(8, '颇老8,jpg', '颇老8.jpg', 1000, 1);
+insert into BOARD_FILE values(9, '颇老9,jpg', '颇老9.jpg', 1000, 1);
+
+insert into BOARD_FILE values(10, '颇老10.jpg', '颇老10.jpg', 1000, 2);
 
 
 commit;
@@ -125,13 +128,7 @@ insert into BOARD_LIKE values('d@naver.com', 5);
 
 insert into BOARD_LIKE values('a@naver.com', 2);
 
-
-
-
-
-
-
-
+select * from board_like where mem_email = 'a@naver.com' and b_seq = 5;
 
 create table BOARD_REPLY(
 BRP_SEQ number constraint REPLY_PK primary key,

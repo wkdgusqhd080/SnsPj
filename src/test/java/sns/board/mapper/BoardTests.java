@@ -4,6 +4,8 @@ import java.util.*;
 
 import java.util.List;
 
+import javax.inject.Inject;
+
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +18,7 @@ import sns.domain.Board_File;
 import sns.domain.Board_Like;
 import sns.domain.Board_Reply;
 import sns.vo.BoardPagingVo;
+import sns.vo.BoardReplyPagingVo;
 @Log4j
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration("file:src/main/webapp/WEB-INF/spring/root-context.xml")
@@ -23,6 +26,10 @@ public class BoardTests {
 	
 	@Autowired
 	private BoardMapper mapper;
+	
+	@Autowired
+	private BoardRestMapper boardRestMapper;
+	
 	/*
 	@Test
 	public void testList() {
@@ -152,7 +159,7 @@ public class BoardTests {
 				//log.info("#board_reply_List: " + board_reply_List);
 		}
 		*/
-		
+		/*
 	@Test
 	public void boardLikeTest() {
 		String mem_email = "a@naver.com";
@@ -166,7 +173,25 @@ public class BoardTests {
 			mapper.insertBoardLike(board_like);
 		}
 		//mapper.deleteBoardLike(board_like);
+	}
+	*/
+	@Test
+	public void boardRestTest() {
+		Map<String, Object> map = new HashMap<String, Object>();
+		long cp = 1; long ps = 5; long b_seq = 1;
+		BoardReplyPagingVo pagingVo = new BoardReplyPagingVo(cp, ps);
+		map.put("b_seq", b_seq); map.put("startRow", pagingVo.getStartRow()); map.put("endRow", pagingVo.getEndRow());
+		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);
 		
+		
+		if(board_reply_list.size() != 0) {
+			for(Board_Reply board_reply : board_reply_list) {
+				String mem_profile = mapper.selectMemberProfile(board_reply.getMem_email());
+				board_reply.setMem_profile(mem_profile);
+			}
+		}
+		
+		log.info("#list: "+board_reply_list);
 	}
 	
 		
