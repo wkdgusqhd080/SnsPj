@@ -139,15 +139,28 @@ B_SEQ number constraint REPLY_FK2 references BOARD(B_SEQ) on delete cascade
 );
 create sequence BOARD_REPLY_SEQ minvalue 0 start with 1 increment by 1 nocache;
 
-insert into BOARD_REPLY values(1, '댓글1', '2020-01-25', 'c@naver.com', 1);
-insert into BOARD_REPLY values(2, '댓글2', '2020-01-26', 'c@naver.com', 1);
-insert into BOARD_REPLY values(3, '댓글3', '2020-01-27', 'c@naver.com', 1);
+insert into BOARD_REPLY values(1, '소통하고 싶어요', '2020-01-25', 'a@naver.com', 5);
+insert into BOARD_REPLY values(2, '안녕하세요', '2020-01-26', 'b@naver.com', 5);
+insert into BOARD_REPLY values(3, '좋네요', '2020-01-27', 'c@naver.com', 5);
 
-insert into BOARD_REPLY values(4, '댓글4', '2020-01-25', 'a@naver.com', 2);
-insert into BOARD_REPLY values(5, '댓글5', '2020-01-26', 'a@naver.com', 2);
-insert into BOARD_REPLY values(6, '댓글6', '2020-01-27', 'a@naver.com', 2);
+insert into BOARD_REPLY values(4, 'nice photo', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(5, '아프지마세요아프지마세요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(6, '멋지네요 정말~', '2020-01-27', 'c@naver.com', 2);
+
+insert into BOARD_REPLY values(7, '좋습니다', '2020-02-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(8, '너무 좋네요', '2020-02-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(9, '흐리게 나왔어요', '2020-02-27', 'c@naver.com', 2);
+
+insert into BOARD_REPLY values(10, 'ㅎㅎ웃기네요', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(11, '그렇지 않네요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(12, '하트 눌렀어요', '2020-01-27', 'c@naver.com', 2);
+
 
 commit;
 
-select * from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
+select boardreply.* from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
+
+
+
+select boardreply.brp_seq, boardreply.brp_content, TO_CHAR(boardreply.brp_rdate, 'YYYY-MM-DD') as brp_rdate, boardreply.mem_email, boardreply.b_seq from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
 
