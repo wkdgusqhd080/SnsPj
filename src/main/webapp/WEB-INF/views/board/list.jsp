@@ -143,7 +143,7 @@ span {
 				   <li><a><em class="mr-5">${board.board_reply_count}</em></a></li>
 
 				   <li><a><i class="fa fa-share-alt"></i></a></li>
-				   <li><a><em class="mr-3">03</em></a></li>
+				   <li><a><em class="mr-3"></em></a></li>
 				   
 				  </ul>
 				  
@@ -169,15 +169,14 @@ span {
 				 <div id="comment_${board.b_seq}" style="display:none; margin-left:8px;margin-right:8px;">
 				 
 				 </div>
-				 
-				 
+
 				 <div class="cardbox-comments">
 				  <span class="comment-avatar float-left">
 				   <a><img class="rounded-circle" src="/resources/user_profile_images/${loginUser.mem_profile}" alt="..."></a>                            
 				  </span>
 				  <div class="search">
-				   <input placeholder="Write a comment" type="text">
-				   <button><img src="/images/paper_plane.png" style="width:25px;height:20px;"></button>
+				   <input placeholder="Write a comment" style="outline:none;" type="text" id="reply_text_${board.b_seq}">
+				   <button type="button" style="outline:none;" b_seq="${board.b_seq}" onclick="boardReplyWrite(this)"><img src="/images/paper_plane.png" style="width:25px;height:20px;"></button>
 				  </div><!--/. Search -->
 				 </div><!--/ cardbox-like -->			  
 						
@@ -199,7 +198,29 @@ span {
           </div><!--/ row -->
          </div><!--/ container -->
  <script>
- 
+  
+ function boardReplyWrite(obj) {
+	 var b_seq = $(obj).attr('b_seq');
+	 var replyText = $("#reply_text_"+b_seq);
+	 if(replyText.val().length != 0) {
+		 var brp_content = replyText.val();
+		 replyText.val("");
+		 $.ajax({
+			 url: "/board_rest/create/"+b_seq,
+			 data: {"brp_content":JSON.stringify(brp_content)},
+			 type: "POST",
+			 success: function(data) {
+				 console.log(data);
+			 },error: function(err) {
+				 console.log(err);
+			 }
+		 });
+		 return;
+	 }else {
+		alert("글을 입력해주세요.");
+		return;
+	 }
+ }
  
  function pagingAjax(obj) {
 	 var uri = $(obj).attr('uri');
@@ -229,10 +250,7 @@ span {
 						 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
 						 $('#'+c_seq).append(pagingHtml);
 					 }
-				 }
-			 	
-			 
-			 
+				 } 
 		 },error: function(err) {
 			 //console.clear();
 			 console.log(err);
