@@ -19,4 +19,5 @@ public interface BoardMapper {
 	Board_Like selectBoardLikeUser(Board_Like board_like);
 	void insertBoardLike(Board_Like board_like);
 	void deleteBoardLike(Board_Like board_like);
+	long selectBoardReplyCount(long b_seq);
 }

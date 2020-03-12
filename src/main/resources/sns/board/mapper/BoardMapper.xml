@@ -58,6 +58,10 @@
 		]]>
 	</delete>
 	
-	
+	<select id="selectBoardReplyCount" parameterType="long" resultType="long">
+		<![CDATA[
+		select COUNT(*) from BOARD_REPLY where B_SEQ = #{b_seq}
+		]]>
+	</select>
 	
 </mapper>

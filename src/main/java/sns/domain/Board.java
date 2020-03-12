@@ -20,4 +20,5 @@ public class Board {
 	private long board_like_count;//vo
 	List<Board_Like> board_like_list;//vo
 	List<Board_File> board_file_list;//vo
+	private long board_reply_count;//vo
 }

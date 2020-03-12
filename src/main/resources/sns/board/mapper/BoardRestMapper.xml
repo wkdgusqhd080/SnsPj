@@ -5,7 +5,7 @@
 <mapper namespace="sns.board.mapper.BoardRestMapper">
 	<select id="selectBoardReply" parameterType="hashmap" resultType="Board_Reply">
 	<![CDATA[
-		select boardreply.brp_seq, boardreply.brp_content, TO_CHAR(boardreply.brp_rdate, 'YYYY-MM-DD') as brp_rdate, boardreply.mem_email, boardreply.b_seq from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = #{b_seq}) br) boardreply where rnum > #{startRow} and rnum <= #{endRow} order by BRP_RDATE desc
+		select boardreply.brp_seq, boardreply.brp_content, TO_CHAR(boardreply.brp_rdate, 'YYYY-MM-DD') as brp_rdate, boardreply.mem_email, boardreply.b_seq from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = #{b_seq} order by BRP_RDATE desc) br) boardreply where rnum > #{startRow} and rnum <= #{endRow}
 	]]>
 	</select>
 	

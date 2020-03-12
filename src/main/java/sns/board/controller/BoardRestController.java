@@ -25,6 +25,7 @@ public class BoardRestController {
 	@GetMapping(value="list/{b_seq}", params= {"cp"})
 	public BoardReplyListResult replyList(@PathVariable long b_seq, @RequestParam long cp) {
 		if(cp == 0) cp = 1;
+		log.info("#나오나요");
 		//log.info("#cp: " + cp + "#b_seq: " + b_seq);
 		return boardRestService.getBoardReplyListResult(cp, b_seq);
 	}

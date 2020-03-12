@@ -40,6 +40,8 @@ public class BoardServiceImpl implements BoardService {
 			b.setMem_profile(mem_profile);
 			long board_like_count = boardMapper.selectBoardLikeCount(b.getB_seq());
 			b.setBoard_like_count(board_like_count);
+			long board_reply_count = boardMapper.selectBoardReplyCount(b.getB_seq());
+			b.setBoard_reply_count(board_reply_count);
 			
 			List<Board_Like> board_like_list = boardMapper.selectBoardLike(b.getB_seq());
 				for(Board_Like board_like : board_like_list) {

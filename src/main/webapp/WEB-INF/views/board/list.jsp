@@ -27,9 +27,21 @@
 
 <%--폰트 --%>
 <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
- 
+<style>
+@import url('https://fonts.googleapis.com/css?family=Yeon+Sung&display=swap');
+span {
+		font-family: 'Yeon Sung', cursive;
+		font-size: 17px;
+	}
+
+</style>
+
  <%--좋아요버튼css--%>
- <link href="/css/btn_like.css" rel="stylesheet">
+<link href="/css/btn_like.css" rel="stylesheet">
+<%--페이징css --%>
+<link href="/css/paging.css" rel="stylesheet">
+
+
 
         <c:if test="${!empty loginUser}">
         	<div style="float:right;">
@@ -43,14 +55,6 @@
         		location.href="/login/logout.do";
         	</script>
         </c:if>
-<style>
-@import url('https://fonts.googleapis.com/css?family=Yeon+Sung&display=swap');
-span {
-		font-family: 'Yeon Sung', cursive;
-		font-size: 17px;
-	}
-
-</style>
 </head>
 
 		<!--[if IE 7]>
@@ -136,9 +140,8 @@ span {
 				  <ul class="float-right">
 
 				   <li><a><i class="fa fa-comments" value="false" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
-				   <li><a><em class="mr-5">12</em></a></li>
-				   
-				    
+				   <li><a><em class="mr-5">${board.board_reply_count}</em></a></li>
+
 				   <li><a><i class="fa fa-share-alt"></i></a></li>
 				   <li><a><em class="mr-3">03</em></a></li>
 				   
@@ -197,31 +200,100 @@ span {
          </div><!--/ container -->
  <script>
  
+ 
+ function pagingAjax(obj) {
+	 var uri = $(obj).attr('uri');
+	 var c_seq = $(obj).attr('c_seq');
+	 var b_seq = $(obj).attr('b_seq');
+		 
+	 $.ajax({
+		 url: uri,
+		 dataType:"json",
+		 success: function(data) {
+			 //console.clear();
+			// console.log(data);
+			 
+			 if(data.boardReplyList.length != 0) {
+				 $('#'+c_seq).empty();
+				 $.each(data.boardReplyList, function(index, item){
+					 var str = '';
+					 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
+					 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
+					 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+					 str += "<br/>";
+					 $('#'+c_seq).append(str); 
+				 });
+			 }
+				 if(data.totalPageCount != 0) {
+					 if(data.totalPageCount != 1) {
+						 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
+						 $('#'+c_seq).append(pagingHtml);
+					 }
+				 }
+			 	
+			 
+			 
+		 },error: function(err) {
+			 //console.clear();
+			 console.log(err);
+		 }
+	 });
+ }
+ 
+ 
+ 
  Paging = function(cp, ps, totalCount, totalPageCount, b_seq, c_seq) {
 	 cp = parseInt(cp);
 	 ps = parseInt(ps);
 	 totalCount = parseInt(totalCount);
 	 totalPageCount = parseInt(totalPageCount);
 	 
+	 var pageBlock = 3;
+	 	 
+	 var pRCnt = parseInt(cp / pageBlock);
+	 if(cp % pageBlock == 0) {
+		 pRCnt = parseInt(cp / pageBlock) - 1;
+	 }
+ 
 	 var pagingHtml = '';
+	 pagingHtml += "<div class='page_wrap'>";
+	 pagingHtml += "<div class='page_nation'>";
+	
+	 //console.log("cp: " + cp+", ps: "+ps);
 	 
-	 pagingHtml += "<div class='board_paging' align='center'>";
-	 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp=1'>&#x000AB;</button>";
-	 if(cp != 1) pagingHtml += "<button onclick='javascript:location.href='/board_rest/list"+b_seq+"?cp="+(cp-1)+"'>&#x02039;</button>";
-	 
-	 for(var i=1; i<=totalPageCount; i++) {
-		 if(i == cp) {
-			 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+i+"' class='on'><strong>"+i+"</strong></button>";
+	 if(cp > pageBlock) {
+		 
+		 var s2;
+		 if(cp % pageBlock == 0) {
+			 s2 = cp - pageBlock;
 		 }else {
-			 pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+i+"'>"+i+"</button>";
+			 s2 = cp - cp % pageBlock;
 		 }
+		// console.log("이전페이지s2: " + s2);
+		 pagingHtml += "<a href='javascript:void(0)' class='arrow prev' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+s2+"' onclick=pagingAjax(this)></a>";
+	 }else {
+		// console.log('처음페이지');
+		 pagingHtml += "<a href='javascript:void(0)' class='arrow pprev' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp=1' onclick=pagingAjax(this)></a>"; 
+	 }
+
+	 	 for(var i=pRCnt * pageBlock + 1; i<(pRCnt+1)*pageBlock + 1; i++) {
+			 if(i == cp) {
+				 pagingHtml += "<a href='javascript:void(0)' class='active' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+i+"' onclick=pagingAjax(this)>"+i+"</a>";
+			 }else {
+				 pagingHtml += "<a href='javascript:void(0)' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+i+"' onclick=pagingAjax(this)>"+i+"</a>";
+			 }
+			 
+			 if(i == totalPageCount) {
+				 break;
+			 }
+		 }
+	 	  
+	 if(totalPageCount > (pRCnt + 1)* pageBlock) {
+		 pagingHtml += "<a href='javascript:void(0)' class='arrow next' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+(cp+1)+"' onclick=pagingAjax(this)></a>";
+		 pagingHtml += "<a href='javascript:void(0)' class='arrow nnext' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+totalPageCount+"' onclick=pagingAjax(this)></a>";
 	 }
 	 
-	 if(cp != totalPageCount) pagingHtml += "<button onclick='javascript:location.href='/board_rest/list/"+b_seq+"?cp="+(cp+1)+"'>&#x0203A;</button>";
-	 
-	 pagingHtml += "<button onclick='javascript:location.href=/board_rest/list/"+b_seq+"?cp="+totalPageCount+"'>&#x000BB;</button>";
-
-	 pagingHtml += "</div>";
+	 pagingHtml += "</div></div>";
 	 
 	 return pagingHtml;
 	 
@@ -238,7 +310,7 @@ span {
 			 url:"/board_rest/list/"+b_seq+"?cp=1",
 			 dataType: "json",
 			 success: function(data) {
-				 console.log(data);
+				// console.log(data);
 				 
 				 if(data.boardReplyList.length != 0) {
 					 $.each(data.boardReplyList, function(index, item) {
@@ -323,9 +395,6 @@ span {
 	 	 likeAjax('plus', obj);
 	 }
  }
-   
-   
-   
     $(document).ready(function(){
     	
       $('.slider').bxSlider({
