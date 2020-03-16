@@ -26,11 +26,7 @@ public class BoardRestServiceImpl implements BoardRestService {
 	@Override
 	public BoardReplyListResult getBoardReplyListResult(long cp, long b_seq) {
 		long ps = 5;
-		Map<String, Object> map = new HashMap<String, Object>();
-		BoardReplyPagingVo pagingVo = new BoardReplyPagingVo(cp, ps);
-		map.put("b_seq", b_seq); 
-		map.put("startRow", pagingVo.getStartRow()); 
-		map.put("endRow", pagingVo.getEndRow());
+		Map<String, Object> map = getPagingVo(cp, ps, b_seq);
 		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);
 		
 		if(board_reply_list.size() != 0) {
@@ -42,14 +38,26 @@ public class BoardRestServiceImpl implements BoardRestService {
 		log.info("#board_reply_list: " + board_reply_list);
 		return new BoardReplyListResult(cp, ps, boardRestMapper.selectBoardReplyCount(b_seq), board_reply_list);
 	}
+	
+	
+	private Map<String, Object> getPagingVo(long cp, long ps, long b_seq) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		BoardReplyPagingVo pagingVo = new BoardReplyPagingVo(cp, ps);
+		map.put("b_seq", b_seq); 
+		map.put("startRow", pagingVo.getStartRow()); 
+		map.put("endRow", pagingVo.getEndRow());
+		return map;
+	}
+	
 
 	@Override
-	public BoardReplyListResult insertBoardReplyS(long b_seq, String mem_email) {
-		//Board_Reply board_reply = new Board_Reply(-1, )
-		//boardRestMapper.insertBoardReply(board_reply);
-		
-		
-		return null;
+	public BoardReplyListResult insertBoardReplyS(long b_seq, String mem_email, String brp_content) {
+		Board_Reply board_reply = new Board_Reply(-1, brp_content, null, mem_email, b_seq, null);
+		boardRestMapper.insertBoardReply(board_reply);
+		long cp = 1; long ps = 5;
+		Map<String, Object> map = getPagingVo(cp, ps, b_seq);
+		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);
+		return new BoardReplyListResult(cp, ps, boardMapper.selectBoardReplyCount(b_seq), board_reply_list);
 	}
 
 }

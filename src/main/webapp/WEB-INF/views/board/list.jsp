@@ -207,10 +207,17 @@ span {
 		 replyText.val("");
 		 $.ajax({
 			 url: "/board_rest/create/"+b_seq,
-			 data: {"brp_content":JSON.stringify(brp_content)},
+			 data: brp_content,
 			 type: "POST",
+			 contentType:"application/json",
 			 success: function(data) {
 				 console.log(data);
+				 var display = $("#comment_"+b_seq).css('display');
+				 if(display == 'block') {//댓글이 나와있는 경우
+					 
+				 }else if(display == 'none') {//댓글이 안나와 있는경우
+					
+				 }
 			 },error: function(err) {
 				 console.log(err);
 			 }

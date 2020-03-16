@@ -34,11 +34,11 @@ public class BoardRestController {
 	}
 	
 	@PostMapping(value="create/{b_seq}")
-	public BoardReplyListResult replyCreate(@PathVariable long b_seq, HttpSession session, @RequestBody Board_Reply board_reply) {
-		log.info("#brp_content: " + board_reply.getBrp_content());
+	public BoardReplyListResult replyCreate(@PathVariable long b_seq, HttpSession session, @RequestBody String brp_content) {
+		log.info("#brp_content: " + brp_content);
 		Member m = (Member)session.getAttribute("loginUser");
 		String mem_email = m.getMem_email();
-		return boardRestService.insertBoardReplyS(b_seq, mem_email);
+		return boardRestService.insertBoardReplyS(b_seq, mem_email, brp_content);
 	}
 	
 	
