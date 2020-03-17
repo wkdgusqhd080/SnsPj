@@ -58,6 +58,12 @@ MEM_EMAIL varchar2(100) constraint FOLLOWER_FK references MEMBER(MEM_EMAIL) on d
 insert into FOLLOW values('b@naver.com', 'a@naver.com');
 insert into FOLLOW values('c@naver.com', 'a@naver.com');
 insert into FOLLOW values('d@naver.com', 'a@naver.com');
+
+insert into FOLLOW values('a@naver.com', 'b@naver.com');
+insert into FOLLOW values('c@naver.com', 'b@naver.com');
+insert into FOLLOW values('d@naver.com', 'b@naver.com');
+
+
 commit;
 select * from FOLLOW;
 
@@ -84,8 +90,8 @@ select * from BOARD order by B_RDATE desc;
 --select B_SEQ, B_CONTENT, MEM_EMAIL, B_RDATE from (select ROWNUM rnum, aa.* from (select * from BOARD where MEM_EMAIL = 'a@naver.com' order by B_RDATE desc) aa) where rnum > 0 and rnum <= 3;
 --select flr_email from follow where mem_email = 'a@naver.com';
 --select ROWNUM rnum, b.* from BOARD b where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
-select * from (select ROWNUM rnum, board.* from (select * from board order by b_rdate desc) board) where rnum > 0 and rnum <= 3 and mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
-
+--select * from (select ROWNUM rnum, board.* from (select * from board order by b_rdate desc) board) where rnum > 0 and rnum <= 3 and mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
+select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'yyyy-MM-dd') from (select ROWNUM rnum, board.* from (select * from board order by b_rdate desc) board) boardlist where rnum > 0 and rnum <= 3 and mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
 
 create table BOARD_FILE(
 BF_SEQ number constraint BOARD_FILE_PK primary key,
@@ -127,6 +133,9 @@ insert into BOARD_LIKE values('c@naver.com', 5);
 insert into BOARD_LIKE values('d@naver.com', 5);
 
 insert into BOARD_LIKE values('a@naver.com', 2);
+
+insert into BOARD_LIKE values('a@naver.com', 1);
+
 
 select * from board_like where mem_email = 'a@naver.com' and b_seq = 5;
 
