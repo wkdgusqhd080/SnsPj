@@ -139,8 +139,8 @@ span {
 				 </c:choose>
 				  <ul class="float-right">
 
-				   <li><a><i class="fa fa-comments" value="false" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
-				   <li><a><em class="mr-5">${board.board_reply_count}</em></a></li>
+				   <li><a><i class="fa fa-comments" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
+				   <li><a><em class="mr-5" id="comment_cnt_tot_${board.b_seq}">${board.board_reply_count}</em></a></li>
 
 				   <li><a><i class="fa fa-share-alt"></i></a></li>
 				   <li><a><em class="mr-3"></em></a></li>
@@ -210,17 +210,60 @@ span {
 			 data: brp_content,
 			 type: "POST",
 			 contentType:"application/json",
+			 dataType:"json", 
 			 success: function(data) {
 				 console.log(data);
 				 var display = $("#comment_"+b_seq).css('display');
+				 var c_seq = "comment_"+b_seq;
+				 
 				 if(display == 'block') {//댓글이 나와있는 경우
 					 
+					 if(data.boardReplyList.length != 0) {
+						 $('#'+c_seq).empty();
+						 $.each(data.boardReplyList, function(index, item){
+							 var str = '';
+							 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
+							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
+							 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+							 str += "<br/>";
+							 $('#'+c_seq).append(str); 
+						 }); 
+					 
+						 if(data.totalPageCount != 0) {
+							 if(data.totalPageCount != 1) {
+								 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
+								 $('#'+c_seq).append(pagingHtml);
+							 }
+						 }
+						 
+						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
+					 }
 				 }else if(display == 'none') {//댓글이 안나와 있는경우
 					
+					 if(data.boardReplyList.length != 0) {
+						 $.each(data.boardReplyList, function(index, item) {
+							 var str = '';
+							 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
+							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
+							 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+							 str += "<br/>";
+							 $('#'+c_seq).append(str);
+						 });
+						 
+						 if(data.totalPageCount != 0) {
+							 if(data.totalPageCount != 1) {
+								 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
+								 $('#'+c_seq).append(pagingHtml);
+							 }
+						 }
+						 $('#'+c_seq).css('display', 'block'); //console.log(flag);
+						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
+					 }
 				 }
 			 },error: function(err) {
 				 console.log(err);
 			 }
+			 
 		 });
 		 return;
 	 }else {
@@ -257,14 +300,14 @@ span {
 						 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
 						 $('#'+c_seq).append(pagingHtml);
 					 }
-				 } 
+				 }
+				 
 		 },error: function(err) {
 			 //console.clear();
 			 console.log(err);
 		 }
 	 });
  }
- 
  
  
  Paging = function(cp, ps, totalCount, totalPageCount, b_seq, c_seq) {
@@ -312,13 +355,12 @@ span {
 				 break;
 			 }
 		 }
-	 	  
+	 	 
 	 if(totalPageCount > (pRCnt + 1)* pageBlock) {
 		 pagingHtml += "<a href='javascript:void(0)' class='arrow next' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+(cp+1)+"' onclick=pagingAjax(this)></a>";
 		 pagingHtml += "<a href='javascript:void(0)' class='arrow nnext' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+totalPageCount+"' onclick=pagingAjax(this)></a>";
 	 }
-	 
-	 pagingHtml += "</div></div>";
+	 	 pagingHtml += "</div></div>";
 	 
 	 return pagingHtml;
 	 
@@ -327,15 +369,14 @@ span {
  function showComment(obj) {
 	 var c_seq = $(obj).attr('c_seq');
 	 var b_seq = $(obj).attr('b_seq');
-	 var flag = $(obj).attr('value');
-	 
-	 if(flag == 'false') {//댓글 보이기
+	 var display = $("#comment_"+b_seq).css('display');
+
+	 if(display == 'none') {
 		 
 		 $.ajax({
 			 url:"/board_rest/list/"+b_seq+"?cp=1",
 			 dataType: "json",
 			 success: function(data) {
-				// console.log(data);
 				 
 				 if(data.boardReplyList.length != 0) {
 					 $.each(data.boardReplyList, function(index, item) {
@@ -355,9 +396,11 @@ span {
 					 }
 					 
 					 $('#'+c_seq).css('display', 'block'); //console.log(flag);
-					 $(obj).attr('value', 'true'); 
+					 $(obj).attr('value', 'true');
+					 
+					 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
 				 }
-				 //$('#'+c_seq).text(data.totalCount);
+				
 				 
 			 },error: function(err) {
 				 console.log(err);
@@ -367,7 +410,6 @@ span {
 	 }else {//댓글 가리기
 		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
 		 $('#'+c_seq).empty();
-		 $(obj).attr('value', 'false');
 	 }
 	 	 
  }
@@ -384,8 +426,7 @@ span {
 			success: function(data) {
 				console.log(data); //console.log("cnt: " + data.board_like_count);
 				$("#like_cnt"+b_seq).text(data.board_like_count+" Likes");
-				var ul = document.getElementById('ul'+b_seq);
-				//console.log(ul);
+				var ul = document.getElementById('ul'+b_seq); //console.log(ul);
 				if(cmd == 'minus') {
 					var li = document.getElementById('like_'+b_seq+'_${loginUser.mem_email}');
 					if (li != null) li.parentNode.removeChild(li);
