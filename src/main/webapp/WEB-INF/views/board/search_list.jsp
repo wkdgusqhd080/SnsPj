@@ -33,33 +33,26 @@ span {
 		font-family: 'Yeon Sung', cursive;
 		font-size: 17px;
 	}
-
 .myButton {
-	box-shadow:inset 0px 1px 0px 0px #ffffff;
-	background:linear-gradient(to bottom, #ffffff 5%, #f6f6f6 100%);
-	background-color:#ffffff;
+	box-shadow:inset 0px 1px 0px 0px #bbdaf7;
+	background:linear-gradient(to bottom, #79bbff 5%, #378de5 100%);
+	background-color:#79bbff;
 	border-radius:6px;
-	border:1px solid #dcdcdc;
+	border:1px solid #84bbf3;
 	display:inline-block;
 	cursor:pointer;
-	color:#666666;
+	color:#ffffff;
 	font-family:Arial;
 	font-size:15px;
 	font-weight:bold;
 	padding:6px 24px;
 	text-decoration:none;
-	text-shadow:0px 1px 0px #ffffff;
+	text-shadow:0px 1px 0px #528ecc;
 }
 .myButton:hover {
-	text-decoration:none;
-	background:linear-gradient(to bottom, #f6f6f6 5%, #ffffff 100%);
-	background-color:#f6f6f6;
+	background:linear-gradient(to bottom, #378de5 5%, #79bbff 100%);
+	background-color:#378de5;
 }
-.myButton:active {
-	position:relative;
-	top:1px;
-}
-
 
 
 </style>
@@ -103,7 +96,7 @@ span {
          
          
          <c:if test="${!empty userSearchListResult}">
-			<c:forEach items="${userSearchListResult.member_list}" var="member">
+			<c:forEach items="${userSearchListResult.member_list}" var="member" varStatus="status">
 
          <div class="col-lg-6 offset-lg-3">
 				<div class="cardbox shadow-lg bg-white">
@@ -112,11 +105,21 @@ span {
 
 				   <div class="d-flex mr-3">
 				   <a><img class="rounded-circle" style="width:100px; height:100px;" src="/resources/user_profile_images/${member.mem_profile}" alt="..."></a>
-				   &emsp;&emsp;&emsp;<span style="margin-top:40px;">${member.mem_email}</span>
-				   &emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
-	
-	   			   <a href="javascript:void(0)" style="margin-top:40px; height:30px;" class="myButton">Follow</a>
-
+				   &emsp;<div style="width:40px;margin-top:40px;"><span>${member.mem_email}</span></div>
+				   <c:choose>
+				   		<c:when test="${fn:contains(userSearchListResult.follow_list, member.mem_email)}">
+					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
+					   		<div style="margin-top:35px;">
+					   		<button type="button" class="myButton" cnt="${status.count}" mem_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button> 
+					   		</div>
+				   		</c:when>
+				   		<c:otherwise>
+					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
+					   		<div style="margin-top:35px;">
+					   		<button type="button" class="myButton" cnt="${status.count}" mem_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Follow</span></button>
+					   		</div>
+				   		</c:otherwise>
+				   </c:choose>
 				   </div>
 				   				
 				 </div><!--/ cardbox-heading -->
@@ -126,19 +129,34 @@ span {
 			</c:forEach>
 		</c:if>
          
-         
-         
-
-				  
-				
-
-			
-			
-			
+	
       	</div>
          </div><!--/ container -->
           </section>
  <script>
+ 
+ function following(obj) {
+ 	var mem_email = $(obj).attr("mem_email");	
+ 	var cnt = $(obj).attr("cnt");
+ 	//console.log(cnt, mem_email);
+ 	var flag = $("#follow_"+cnt).text();
+ 	if(flag == "Unfollow") {
+ 		$("#follow_"+cnt).text("Follow");
+ 	}else {
+ 		$("#follow_"+cnt).text("Unfollow");
+ 	}
+ 	
+ 	
+  }
+ 
+ 
+ $(document).ready(function(){
+     
+     $("#btn_logout").on('click', function(){
+   	 location.href="/login/logout.do";
+     });
+
+  });
  
  $("#search_btn").on('click', function(){
 	 if($("#search_text").val() == '') {
@@ -148,16 +166,12 @@ span {
 	 }else {
 		 location.href="/board/searchList.do?keyword="+$("#search_text").val();
 	 }
- });
+ }); 
  
-    $(document).ready(function(){
-      
-      $("#btn_logout").on('click', function(){
-    	 location.href="/login/logout.do";
-      });
 
-   });
     
+    
+
     
 
     
