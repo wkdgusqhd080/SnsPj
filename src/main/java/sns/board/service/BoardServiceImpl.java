@@ -13,9 +13,12 @@ import sns.board.mapper.BoardMapper;
 import sns.domain.Board;
 import sns.domain.Board_File;
 import sns.domain.Board_Like;
+import sns.domain.Follow;
+import sns.domain.Member;
 import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
 import sns.vo.BoardPagingVo;
+import sns.vo.UserSearchListResult;
 
 @Service
 @Log4j
@@ -64,7 +67,7 @@ public class BoardServiceImpl implements BoardService {
 					}
 				
 		}
-				log.info("#boardList: " + boardList);
+				//log.info("#boardList: " + boardList);
 		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
 	}
 
@@ -91,6 +94,15 @@ public class BoardServiceImpl implements BoardService {
 		}
 		return new BoardLikeVo(b_seq, board_like_count, board_like_list);
 	}
+
+	@Override
+	public UserSearchListResult getUserSearchListResult(String keyword, String mem_email) {
+		List<Member> member_list = boardMapper.selectUser(keyword);
+		List<Follow> follow_list = boardMapper.selectFollow(mem_email);
+		return new UserSearchListResult(member_list, follow_list);
+	}
+	
+	
 	
 
 }

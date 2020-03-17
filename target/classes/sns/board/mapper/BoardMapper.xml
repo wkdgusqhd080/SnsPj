@@ -4,9 +4,14 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sns.board.mapper.BoardMapper">
 	<select id="selectBoard" parameterType="hashmap" resultType="Board">
+	<!--  
 		<![CDATA[
 			select * from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
 		]]>
+	-->
+			<![CDATA[
+			select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) boardlist where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
+			]]>
 	</select>
 	
 	<select id="selectBoardFile" parameterType="long" resultType="Board_File">
@@ -63,5 +68,20 @@
 		select COUNT(*) from BOARD_REPLY where B_SEQ = #{b_seq}
 		]]>
 	</select>
+	
+	<select id="selectUser" parameterType="String" resultType="Member">
+		<![CDATA[
+		SELECT * FROM MEMBER WHERE MEM_EMAIL LIKE LOWER(#{keyword}||'%')
+		]]>
+	</select>
+	
+	<select id="selectFollow" parameterType="String" resultType="Follow">
+		<![CDATA[
+		SELECT * FROM FOLLOW WHERE MEM_EMAIL = #{mem_email}
+		]]>
+	</select>
+	
+	
+	
 	
 </mapper>

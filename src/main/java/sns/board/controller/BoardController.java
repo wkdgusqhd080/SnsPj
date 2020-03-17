@@ -9,11 +9,13 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j;
@@ -32,12 +34,21 @@ public class BoardController {
 	BoardService boardService;
 
 	@RequestMapping(value = "list.do", method = RequestMethod.POST)
-	public String board(HttpSession session, Model model, String mem_email) {
+	public String boardList(HttpSession session, Model model, String mem_email) {
 		long cp = 1;
 		long ps = 3;
 		BoardListResult boardListResult = boardService.getBoardListResult(cp, ps, mem_email);
 		model.addAttribute("boardListResult", boardListResult);
 		return "board/list";
+	}
+	
+	@GetMapping("infinityList.do")
+	@ResponseBody
+	public BoardListResult infinityList(long cp, HttpSession session) {
+		Member m = (Member)session.getAttribute("loginUser");
+		String mem_email = m.getMem_email();
+		long ps = 3;
+		return boardService.getBoardListResult(cp, ps, mem_email);
 	}
 	
 	
@@ -51,5 +62,17 @@ public class BoardController {
 		BoardLikeVo boardLikeVo = boardService.likePlusMinus(b_seq, mem_email, cmd);
 		return boardLikeVo;
 	}
+	
+	@RequestMapping(value ="searchList.do", method=RequestMethod.GET)
+	public ModelAndView boardSearch(String keyword, HttpSession session) {
+		Member m = (Member)session.getAttribute("loginUser");
+		String mem_email = m.getMem_email();
+		ModelAndView mv = new ModelAndView();
+		mv.setViewName("board/search_list");
+		mv.addObject("userSearchListResult", boardService.getUserSearchListResult(keyword, mem_email));
+		return mv;
+	}
+	
+	
 	
 }

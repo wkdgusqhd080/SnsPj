@@ -17,6 +17,7 @@ import sns.domain.Board;
 import sns.domain.Board_File;
 import sns.domain.Board_Like;
 import sns.domain.Board_Reply;
+import sns.domain.Member;
 import sns.vo.BoardPagingVo;
 import sns.vo.BoardReplyPagingVo;
 @Log4j
@@ -175,6 +176,9 @@ public class BoardTests {
 		//mapper.deleteBoardLike(board_like);
 	}
 	*/
+	
+	
+	/*
 	@Test
 	public void boardRestTest() {
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -192,6 +196,16 @@ public class BoardTests {
 		}
 		
 		log.info("#list: "+board_reply_list);
+	}
+	*/
+	
+	@Test
+	public void searchUserText() {
+		String mem_email = "b";
+		List<Member> member_list = mapper.selectUser(mem_email);
+		log.info("#member_list: " + member_list);
+		
+		
 	}
 	
 		

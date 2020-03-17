@@ -26,12 +26,13 @@ public class BoardRestController {
 	@Inject
 	BoardRestService boardRestService;
 		
-	@GetMapping(value="list/{b_seq}", params= {"cp"})
+	@GetMapping(value="list/{b_seq}", params={"cp"})
 	public BoardReplyListResult replyRead(@PathVariable long b_seq, @RequestParam long cp) {
 		if(cp == 0) cp = 1;
 		//log.info("#cp: " + cp + "#b_seq: " + b_seq);
 		return boardRestService.getBoardReplyListResult(cp, b_seq);
 	}
+		
 	
 	@PostMapping(value="create/{b_seq}")
 	public BoardReplyListResult replyCreate(@PathVariable long b_seq, HttpSession session, @RequestBody String brp_content) {

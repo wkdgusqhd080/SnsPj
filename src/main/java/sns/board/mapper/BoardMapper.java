@@ -7,6 +7,8 @@ import sns.domain.Board;
 import sns.domain.Board_File;
 import sns.domain.Board_Like;
 import sns.domain.Board_Reply;
+import sns.domain.Follow;
+import sns.domain.Member;
 
 public interface BoardMapper {
 	List<Board> selectBoard(Map map);
@@ -20,4 +22,6 @@ public interface BoardMapper {
 	void insertBoardLike(Board_Like board_like);
 	void deleteBoardLike(Board_Like board_like);
 	long selectBoardReplyCount(long b_seq);
+	List<Member> selectUser(String keyword);
+	List<Follow> selectFollow(String mem_email);
 }

@@ -68,9 +68,9 @@ span {
          <div class="container">
        		
        		<div align="center">
-       		<input type="text" id="searchBar" placeholder="Search" style="height:30px;width:500px;margin-bottom:5%;"/>
-       		<button><i class="fa fa-search fa-lg" aria-hidden="true" id="searchIcon"></i></button>
-       		</div>  
+       		<input type="text" id="search_text" placeholder="Search" style="height:30px;width:500px;margin-bottom:5%;"/>
+       		<button type="button" id="search_btn"><i class="fa fa-search fa-lg" aria-hidden="true" id="search_icon"></i></button>
+       		</div>
        
           <div class="row">	
 		  
@@ -198,8 +198,118 @@ span {
           </div><!--/ row -->
          </div><!--/ container -->
  <script>
-  
- function boardReplyWrite(obj) {
+ current_page = 1;
+ $(window).scroll(function(){
+	 
+	 let $window = $(this);
+	 let scrollTop = $window.scrollTop();
+	 let windowHeight = $window.height();
+	 let documentHeight = $(document).height();
+	 if(scrollTop + windowHeight + 30 > documentHeight) {
+		//console.log(++current_page);
+		++current_page;
+		$.ajax({
+			url: "/board/infinityList.do?cp="+current_page,
+			contentType: "application/json",
+			dataType: "json",
+			success: function(data) {
+				//console.log(data);
+
+				if(data.boardList.length != 0) {
+					var str = '';
+					$.each(data.boardList, function(board_idx, board) {
+						str += "<div class='col-lg-6 offset-lg-3'><div class='cardbox shadow-lg bg-white'><div class='cardbox-heading'><div class='dropdown float-right'><button class='btn btn-flat btn-flat-icon' type='button' data-toggle='dropdown' aria-expanded='false'><em class='fa fa-ellipsis-h'></em></button> <div class='dropdown-menu dropdown-scale dropdown-menu-right' role='menu' style='position: absolute; transform: translate3d(-136px, 28px, 0px); top: 0px; left: 0px; will-change: transform;'><a class='dropdown-item' href='#'>Hide post</a><a class='dropdown-item' href='#'>Stop following</a><a class='dropdown-item' href='#'>Report</a></div></div>";
+						str += "<div class='media m-0'><div class='d-flex mr-3'> <img class='img-fluid rounded-circle' src='/resources/user_profile_images/"+board.mem_profile+"' alt='User'"+board_idx+"> </div> <div class='media-body'> <p class='m-0'>"+board.mem_email+"</p> <small><span><i class='icon ion-md-time'></i>"+board.b_rdate+"</span></small> </div></div></div>";
+						str += "<div class='cardbox-item'>";
+						if(board.board_file_list != null) {
+							str += "<ul class='slider'>";
+							$.each(board.board_file_list, function(board_file_idx, board_file) {
+								str += "<li><img style='width:550px;' src='/resources/board_file_images/"+board_file.bf_fname+"'></li>";
+							});
+							str += "</ul>";
+						}
+						
+						str += "<div style='margin-left:5%; font-family: "+'Yeon Sung'+", cursive; font-size:20px;'>"+board.b_content+"</div></div>";
+						str += "<div class='cardbox-base'>";
+						
+						if(board.board_like_list != null) {//좋아요리스트 != null
+							var board_like_mem_email_list = [];//includes를 사용하기 위하여 배열 생성
+							for(var i=0; i<board.board_like_list.length; i++) {
+								board_like_mem_email_list.push(board.board_like_list[i].mem_email);
+							}
+								if(board_like_mem_email_list.includes('${loginUser.mem_email}')) {//유저가  좋아요를 눌렀을 경우
+									str += "<a style='margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:99.9992% 0px' b_seq='"+board.b_seq+"' class='heart' onclick='heartPlus(this);'></a>";
+								}else {//유저가  좋아요를 눌르지 않았을 경우
+									str += "<a style='margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:0px' b_seq='"+board.b_seq+"' class='heart' onclick='heartPlus(this);'></a>";
+								}
+						}else {//좋아요리스트 == null
+							str += "<a style='margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:0px' b_seq='"+board.b_seq+"' class='heart' onclick='heartPlus(this);'></a>";
+						}
+							str += "<ul class='float-right'>";
+							str += "<li><a><i class='fa fa-comments' b_seq='"+board.b_seq+"' c_seq='comment_"+board.b_seq+"' style='cursor:pointer;' onclick='showComment(this);'></i></a></li>";
+							str += "<li><a><em class='mr-5' id='comment_cnt_tot_"+board.b_seq+"'>"+board.board_reply_count+"</em></a></li>";
+							str += "<li><a><i class='fa fa-share-alt'></i></a></li><li><a><em class='mr-3'></em></a></li> </ul>";
+							
+							str += "<ul id='ul"+board.b_seq+"'>";
+							
+							if(board.board_like_list != null) {
+								if(board.board_like_list.length >= 3) {
+									for(var i = 0; i<board.board_like_list.length; i++) {
+										str += "<li id='like_"+board.b_seq+"_"+board.board_like_list[i].mem_email+"'><a href='#'><img src='/resources/user_profile_images/"+board.board_like_list[i].mem_profile+"' class='img-fluid rounded-circle' alt='User'></a></li>";
+										if(i == 3) {
+											break;
+										}
+									}
+								}else {
+									for(var m of board.board_like_list) {
+										str += "<li id='like_"+board.b_seq+"_"+m.mem_email+"'><a href='#'><img src='/resources/user_profile_images/"+m.mem_profile+"' class='img-fluid rounded-circle' alt='User'></a></li>";
+										}
+									}
+							}
+					
+							if(board.board_like_list != null) {
+								str += "<li><a><span id='like_cnt"+board.b_seq+"'>"+board.board_like_list.length+" Likes</span></a></li>";
+							}else {
+								str += "<li><a><span id='like_cnt"+board.b_seq+"'>0 Likes</span></a></li>";
+							}
+								str += "</ul></div>";
+							
+								str += "<div id='comment_"+board.b_seq+"' style='display:none; margin-left:8px;margin-right:8px;'> </div>";
+								str += "<div class='cardbox-comments'> <span class='comment-avatar float-left'>";
+								str += "<a><img class='rounded-circle' src='/resources/user_profile_images/${loginUser.mem_profile}' alt='...'></a> </span>";
+								str += "<div class='search'> <input placeholder='Write a comment' style='outline:none;' type='text' id='reply_text_"+board.b_seq+"'>";
+								str += "<button type='button' style='outline:none;' b_seq='"+board.b_seq+"' onclick='boardReplyWrite(this)'><img src='/images/paper_plane.png' style='width:25px;height:20px;'></button>";
+								str += "</div> </div> </div> </div>";
+								
+						
+						});
+								$('.row').append(str);
+						        $('.slider').bxSlider({
+						        	  controls: false
+						        });
+					}
+				
+			}, error: function(err) {
+				console.log(err);
+			}
+			
+		});
+
+	 }
+	 
+ });
+
+ $("#search_btn").on('click', function(){//검색
+	 if($("#search_text").val() == '') {
+		 alert("아이디를 입력 후 검색해주세요.");
+		 $("#search_text").focus();
+		 return;
+	 }else {
+		 location.href="/board/searchList.do?keyword="+$("#search_text").val();
+	 }
+ });
+ 
+ function boardReplyWrite(obj) {//댓글
 	 var b_seq = $(obj).attr('b_seq');
 	 var replyText = $("#reply_text_"+b_seq);
 	 if(replyText.val().length != 0) {
@@ -212,7 +322,7 @@ span {
 			 contentType:"application/json",
 			 dataType:"json", 
 			 success: function(data) {
-				 console.log(data);
+				 //console.log(data);
 				 var display = $("#comment_"+b_seq).css('display');
 				 var c_seq = "comment_"+b_seq;
 				 
@@ -272,7 +382,7 @@ span {
 	 }
  }
  
- function pagingAjax(obj) {
+ function pagingAjax(obj) {//댓글페이징
 	 var uri = $(obj).attr('uri');
 	 var c_seq = $(obj).attr('c_seq');
 	 var b_seq = $(obj).attr('b_seq');
@@ -281,8 +391,6 @@ span {
 		 url: uri,
 		 dataType:"json",
 		 success: function(data) {
-			 //console.clear();
-			// console.log(data);
 			 
 			 if(data.boardReplyList.length != 0) {
 				 $('#'+c_seq).empty();
@@ -310,7 +418,7 @@ span {
  }
  
  
- Paging = function(cp, ps, totalCount, totalPageCount, b_seq, c_seq) {
+ Paging = function(cp, ps, totalCount, totalPageCount, b_seq, c_seq) {//댓글 페이징관련
 	 cp = parseInt(cp);
 	 ps = parseInt(ps);
 	 totalCount = parseInt(totalCount);
@@ -366,7 +474,7 @@ span {
 	 
  }
  
- function showComment(obj) {
+ function showComment(obj) {//댓글 
 	 var c_seq = $(obj).attr('c_seq');
 	 var b_seq = $(obj).attr('b_seq');
 	 var display = $("#comment_"+b_seq).css('display');
@@ -415,7 +523,7 @@ span {
  }
  
  
- function likeAjax(cmd, obj) {
+ function likeAjax(cmd, obj) {//좋아요
 	 var b_seq = $(obj).attr('b_seq');
 	 var str = { 'str' : cmd+","+b_seq+",${loginUser.mem_email}" };
 	 $.ajax({
@@ -424,7 +532,7 @@ span {
 			type: "POST",
 			dataType: "json",
 			success: function(data) {
-				console.log(data); //console.log("cnt: " + data.board_like_count);
+				//console.log(data); //console.log("cnt: " + data.board_like_count);
 				$("#like_cnt"+b_seq).text(data.board_like_count+" Likes");
 				var ul = document.getElementById('ul'+b_seq); //console.log(ul);
 				if(cmd == 'minus') {
@@ -450,7 +558,7 @@ span {
  }
  
 
- function heartPlus(obj) {
+ function heartPlus(obj) {//좋아요
 	 var filled = $(obj).css('background-position');
 	 var b_seq = $(obj).attr('b_seq');
 	 if(filled == '99.9992% 0px') {//minus
