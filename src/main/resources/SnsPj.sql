@@ -67,14 +67,14 @@ B_CONTENT varchar2(3000),
 MEM_EMAIL varchar2(100) constraint BOARD_FK references MEMBER(MEM_EMAIL) on delete cascade,
 B_RDATE date
 );
-create sequence BOARD_SEQ minvalue 0 start with 1 increment by 1 nocache;
+create sequence BOARD_SEQ minvalue 0 start with 0 increment by 1 nocache;
 
-insert into BOARD values(1, '오늘 하루는 어떨까?', 'b@naver.com', '2020-01-27');
-insert into BOARD values(2, '날씨가 좋다.', 'b@naver.com', '2020-02-28');
+insert into BOARD values(BOARD_SEQ.nextval, '오늘 하루는 어떨까?', 'b@naver.com', '2020-01-27');
+insert into BOARD values(BOARD_SEQ.nextval, '날씨가 좋다.', 'b@naver.com', '2020-02-28');
 
-insert into BOARD values(3, '배가 고프다.', 'c@naver.com', '2020-01-25');
-insert into BOARD values(4, '하품이 나온다.', 'c@naver.com', '2020-02-26');
-insert into BOARD values(5, '오늘은 즐거운날이에요.', 'b@naver.com', '2020-03-02');
+insert into BOARD values(BOARD_SEQ.nextval, '배가 고프다.', 'c@naver.com', '2020-01-25');
+insert into BOARD values(BOARD_SEQ.nextval, '하품이 나온다.', 'c@naver.com', '2020-02-26');
+insert into BOARD values(BOARD_SEQ.nextval, '오늘은 즐거운날이에요.', 'b@naver.com', '2020-03-02');
 
 
 commit;
@@ -94,21 +94,21 @@ BF_FNAME varchar2(300),
 BF_SIZE number,
 B_SEQ number constraint BOARD_FILE_FK references BOARD(B_SEQ) on delete cascade
 );
-create sequence BOARD_FILE_SEQ minvalue 0 start with 1 increment by 1 nocache;
+create sequence BOARD_FILE_SEQ minvalue 0 start with 0 increment by 1 nocache;
 
-insert into BOARD_FILE values(1, '파일1.jpg', '파일1.jpg', 1000, 5);
-insert into BOARD_FILE values(2, '파일2,jpg', '파일2.jpg', 1000, 5);
-insert into BOARD_FILE values(3, '파일3,jpg', '파일3.jpg', 1000, 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일1.jpg', '파일1.jpg', 1000, 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일2,jpg', '파일2.jpg', 1000, 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일3,jpg', '파일3.jpg', 1000, 5);
 
-insert into BOARD_FILE values(4, '파일4.jpg', '파일4.jpg', 1000, 2);
-insert into BOARD_FILE values(5, '파일5,jpg', '파일5.jpg', 1000, 2);
-insert into BOARD_FILE values(6, '파일6,jpg', '파일6.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일4.jpg', '파일4.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일5,jpg', '파일5.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일6,jpg', '파일6.jpg', 1000, 2);
 
-insert into BOARD_FILE values(7, '파일7.jpg', '파일7.jpg', 1000, 1);
-insert into BOARD_FILE values(8, '파일8,jpg', '파일8.jpg', 1000, 1);
-insert into BOARD_FILE values(9, '파일9,jpg', '파일9.jpg', 1000, 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일7.jpg', '파일7.jpg', 1000, 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일8,jpg', '파일8.jpg', 1000, 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일9,jpg', '파일9.jpg', 1000, 1);
 
-insert into BOARD_FILE values(10, '파일10.jpg', '파일10.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일10.jpg', '파일10.jpg', 1000, 2);
 
 
 commit;
@@ -137,23 +137,47 @@ BRP_RDATE date,
 MEM_EMAIL varchar2(100) constraint REPLY_FK1 references MEMBER(MEM_EMAIL) on delete cascade,
 B_SEQ number constraint REPLY_FK2 references BOARD(B_SEQ) on delete cascade
 );
-create sequence BOARD_REPLY_SEQ minvalue 0 start with 1 increment by 1 nocache;
+create sequence BOARD_REPLY_SEQ minvalue 0 start with 0 increment by 1 nocache;
 
-insert into BOARD_REPLY values(1, '소통하고 싶어요', '2020-01-25', 'a@naver.com', 5);
-insert into BOARD_REPLY values(2, '안녕하세요', '2020-01-26', 'b@naver.com', 5);
-insert into BOARD_REPLY values(3, '좋네요', '2020-01-27', 'c@naver.com', 5);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '소통하고 싶어요', '2020-01-25', 'a@naver.com', 5);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '안녕하세요', '2020-01-26', 'b@naver.com', 5);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '좋네요', '2020-01-27', 'c@naver.com', 5);
 
-insert into BOARD_REPLY values(4, 'nice photo', '2020-01-25', 'a@naver.com', 2);
-insert into BOARD_REPLY values(5, '아프지마세요아프지마세요', '2020-01-26', 'b@naver.com', 2);
-insert into BOARD_REPLY values(6, '멋지네요 정말~', '2020-01-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'nice photo', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '아프지마세요아프지마세요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '멋지네요 정말~', '2020-01-27', 'c@naver.com', 2);
 
-insert into BOARD_REPLY values(7, '좋습니다', '2020-02-25', 'a@naver.com', 2);
-insert into BOARD_REPLY values(8, '너무 좋네요', '2020-02-26', 'b@naver.com', 2);
-insert into BOARD_REPLY values(9, '흐리게 나왔어요', '2020-02-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '좋습니다', '2020-02-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '너무 좋네요', '2020-02-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '흐리게 나왔어요', '2020-02-27', 'c@naver.com', 2);
 
-insert into BOARD_REPLY values(10, 'ㅎㅎ웃기네요', '2020-01-25', 'a@naver.com', 2);
-insert into BOARD_REPLY values(11, '그렇지 않네요', '2020-01-26', 'b@naver.com', 2);
-insert into BOARD_REPLY values(12, '하트 눌렀어요', '2020-01-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'ㅎㅎ웃기네요', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '그렇지 않네요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '하트 눌렀어요', '2020-01-27', 'c@naver.com', 2);
+
+
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '댓글이 잘달려요', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'Ajax 재밌어', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'Restful하다', '2020-01-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'cloud and bubble', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'miss u', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, 'i luv', '2020-01-27', 'c@naver.com', 2);
+
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '오늘 어디로가요?', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '아메리카노 좋아해요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '오늘 술마실래요?', '2020-01-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '소금 좋아요', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '지바노프 좋아요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '괜찮습니다 그렇게 말씀하신다면', '2020-01-27', 'c@naver.com', 2);
+
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '하품나와요', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '라떼 좋아해요', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '라떼는 말이야', '2020-01-27', 'c@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '집에가고싶어', '2020-01-25', 'a@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '화이팅합시다', '2020-01-26', 'b@naver.com', 2);
+insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '취준 화이팅', '2020-01-27', 'c@naver.com', 2);
+
+
 
 
 commit;
