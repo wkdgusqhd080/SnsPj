@@ -139,7 +139,7 @@ span {
 				 </c:choose>
 				  <ul class="float-right">
 
-				   <li><a><i class="fa fa-comments" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="showComment(this);"></i></a></li>
+				   <li><a><i class="fa fa-comments" b_seq="${board.b_seq}" c_seq="comment_${board.b_seq}" style="cursor:pointer;" onclick="boardReplyRead(this);"></i></a></li>
 				   <li><a><em class="mr-5" id="comment_cnt_tot_${board.b_seq}">${board.board_reply_count}</em></a></li>
 
 				   <li><a><i class="fa fa-share-alt"></i></a></li>
@@ -176,7 +176,16 @@ span {
 				  </span>
 				  <div class="search">
 				   <input placeholder="Write a comment" style="outline:none;" type="text" id="reply_text_${board.b_seq}">
-				   <button type="button" style="outline:none;" b_seq="${board.b_seq}" onclick="boardReplyWrite(this)"><img src="/images/paper_plane.png" style="width:25px;height:20px;"></button>
+				   
+				   <%-- 
+				   <button type="button" style="outline:none;" b_seq="${board.b_seq}" onclick="boardReplyCreate(this)">
+				   <img src="/images/paper_plane.png" style="width:25px;height:20px;">
+				   </button>
+				   <button type="button">수정</button>
+				   --%>
+				   
+				   <img src="/images/paper_plane.png" b_seq="${board.b_seq}" style="width:25px;height:20px; cursor:pointer;" onclick="boardReplyCreate(this)">
+
 				  </div><!--/. Search -->
 				 </div><!--/ cardbox-like -->			  
 						
@@ -198,8 +207,9 @@ span {
           </div><!--/ row -->
          </div><!--/ container -->
  <script>
- current_page = 1;
- $(window).scroll(function(){
+ 
+ current_page = 1;//페이징
+ $(window).scroll(function(){//게시판 무한스크롤링
 	 
 	 let $window = $(this);
 	 let scrollTop = $window.scrollTop();
@@ -246,7 +256,7 @@ span {
 							str += "<a style='margin:0%; margin-top:1.5%;float:right;width:50px; height:50px;background-position:0px' b_seq='"+board.b_seq+"' class='heart' onclick='heartPlus(this);'></a>";
 						}
 							str += "<ul class='float-right'>";
-							str += "<li><a><i class='fa fa-comments' b_seq='"+board.b_seq+"' c_seq='comment_"+board.b_seq+"' style='cursor:pointer;' onclick='showComment(this);'></i></a></li>";
+							str += "<li><a><i class='fa fa-comments' b_seq='"+board.b_seq+"' c_seq='comment_"+board.b_seq+"' style='cursor:pointer;' onclick='boardReplyRead(this);'></i></a></li>";
 							str += "<li><a><em class='mr-5' id='comment_cnt_tot_"+board.b_seq+"'>"+board.board_reply_count+"</em></a></li>";
 							str += "<li><a><i class='fa fa-share-alt'></i></a></li><li><a><em class='mr-3'></em></a></li> </ul>";
 							
@@ -278,7 +288,7 @@ span {
 								str += "<div class='cardbox-comments'> <span class='comment-avatar float-left'>";
 								str += "<a><img class='rounded-circle' src='/resources/user_profile_images/${loginUser.mem_profile}' alt='...'></a> </span>";
 								str += "<div class='search'> <input placeholder='Write a comment' style='outline:none;' type='text' id='reply_text_"+board.b_seq+"'>";
-								str += "<button type='button' style='outline:none;' b_seq='"+board.b_seq+"' onclick='boardReplyWrite(this)'><img src='/images/paper_plane.png' style='width:25px;height:20px;'></button>";
+								str += "<button type='button' style='outline:none;' b_seq='"+board.b_seq+"' onclick='boardReplyCreate(this)'><img src='/images/paper_plane.png' style='width:25px;height:20px;'></button>";
 								str += "</div> </div> </div> </div>";
 								
 						
@@ -309,10 +319,123 @@ span {
 	 }
  });
  
- function boardReplyWrite(obj) {//댓글
+ function boardReplyRead(obj) {//댓글 보여주기
+	 var c_seq = $(obj).attr('c_seq');
+	 var b_seq = $(obj).attr('b_seq');
+	 var display = $("#comment_"+b_seq).css('display');
+
+	 if(display == 'none') {
+		 
+		 $.ajax({
+			 url:"/board_rest/list/"+b_seq+"?cp=1",
+			 dataType: "json",
+			 success: function(data) {
+				 
+				 if(data.boardReplyList.length != 0) {
+					 $.each(data.boardReplyList, function(index, item) {
+						 var str = '';
+						 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
+						 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:30px;height:30px;'></a>";
+						 str += "<span style='font-size:12px;'>"+item.mem_email+":</span>"
+						 str += "<span style='margin-left:8px; font-size:14px;' id='brp_content_"+item.brp_seq+"'>"+item.brp_content+"</span>";
+						 if(item.mem_email == '${loginUser.mem_email}') {
+							 str += "&nbsp;<span id='brp_"+item.brp_seq+"'><a href='javascript:void(0)' cp='"+data.currentPage+"' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' id='brp_update_request_"+item.brp_seq+"' onclick='boardReplyUpdateRequest(this);' style='text-decoration:none; font-size:10px;'>수정</a>";
+							 str += "&nbsp;<a href='javascript:void(0)' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' onclick='boardReplyDelete(this);' id='brp_delete_request_"+item.brp_seq+"' style='text-decoration:none; font-size:10px;'>삭제</a></span>";
+						 }
+						 str += "<br/>";
+						 $('#'+c_seq).append(str);
+					 });
+					 
+					 if(data.totalPageCount != 0) {
+						 if(data.totalPageCount != 1) {
+							 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
+							 $('#'+c_seq).append(pagingHtml);
+						 }
+					 }
+					 
+					 $('#'+c_seq).css('display', 'block'); //console.log(flag);
+					 $(obj).attr('value', 'true');
+					 
+					 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
+				 }
+				
+				 
+			 },error: function(err) {
+				 console.log(err);
+			 }
+		 });
+
+	 }else {//댓글 가리기
+		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
+		 $('#'+c_seq).empty();
+	 }
+	 	 
+ }
+ 
+ 
+ function boardReplyUpdateRequest(obj) {
+	 
+	 let brp_seq =  $(obj).attr("brp_seq");
+	 let b_seq = $(obj).attr("b_seq");
+	 let brp_content = $("#brp_content_"+brp_seq).text();
+	 let cp = $(obj).attr("cp");
+	 
+	 console.log("#brp_content: " + brp_content);
+	 
+	 $("#reply_text_"+b_seq).val("");
+	 $("#reply_text_"+b_seq).val(brp_content);
+	 
+	 let str = "<span id='brp_update_write_"+brp_seq+"'><a href='javascript:void(0)' cp='"+cp+"' brp_seq='"+brp_seq+"' b_seq='"+b_seq+"' style='text-decoration:none; font-size:10px;' onclick='boardReplyUpdate(this);'>수정하기</a></span>";
+
+	 $("#brp_"+brp_seq).append(str);
+	 $("#brp_update_request_"+brp_seq).css('display', 'none');
+	 $("#brp_delete_request_"+brp_seq).css('display', 'none');
+	 
+	 
+ }
+ function boardReplyUpdate(obj) {
+	 
+	 let brp_seq = $(obj).attr("brp_seq");
+	 let b_seq = $(obj).attr("b_seq");
+	 let brp_content = $("#reply_text_"+b_seq).val();
+	 let cpStr = $(obj).attr("cp");
+	 
+	 $.ajax({
+		 url:"/board_rest/update/"+brp_seq,
+		 data: JSON.stringify({"brp_content": brp_content,
+			 	"cpStr":cpStr
+			 	}),
+		 type: "PATCH",
+		 contentType:"application/json",
+		 dataType: "json",
+		 success: function(data) {
+			 console.log(data);
+		 }, error: function(err) {
+			 console.log(err);
+		 }
+	 });
+	
+	 
+	 console.log($("#reply_text_"+b_seq).val());
+	 
+	 //alert("글 수정이 완료되었습니다.");
+	 $("#reply_text_"+b_seq).val("");
+	 
+	 $("#brp_update_write_"+brp_seq).remove();
+	 $("#brp_update_request_"+brp_seq).css('display', 'inline');
+	 $("#brp_delete_request_"+brp_seq).css('display', 'inline');
+	 
+	 
+	 
+	 
+ }
+ 
+ 
+ function boardReplyCreate(obj) {//댓글쓰는부분
 	 var b_seq = $(obj).attr('b_seq');
 	 var replyText = $("#reply_text_"+b_seq);
-	 if(replyText.val().length != 0) {
+	 
+	 if(replyText.val().length != 0 || replyText.val() != "") {
 		 var brp_content = replyText.val();
 		 replyText.val("");
 		 $.ajax({
@@ -333,8 +456,13 @@ span {
 						 $.each(data.boardReplyList, function(index, item){
 							 var str = '';
 							 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
-							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
-							 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:30px;height:30px;'></a>";
+							 str += "<span style='font-size:12px;'>"+item.mem_email+":</span>"
+							 str += "<span style='margin-left:8px; font-size:14px;' id='brp_content_"+item.brp_seq+"'>"+item.brp_content+"</span>";
+							 if(item.mem_email == '${loginUser.mem_email}') {
+								 str += "&nbsp;<span id='brp_"+item.brp_seq+"'><a href='javascript:void(0)' cp='"+data.currentPage+"' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' id='brp_update_request_"+item.brp_seq+"' onclick='boardReplyUpdateRequest(this);' style='text-decoration:none; font-size:10px;'>수정</a>";
+								 str += "&nbsp;<a href='javascript:void(0)' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' onclick='boardReplyDelete(this);' id='brp_delete_request_"+item.brp_seq+"' style='text-decoration:none; font-size:10px;'>삭제</a></span>";
+							 }
 							 str += "<br/>";
 							 $('#'+c_seq).append(str); 
 						 }); 
@@ -354,8 +482,13 @@ span {
 						 $.each(data.boardReplyList, function(index, item) {
 							 var str = '';
 							 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
-							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
-							 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+							 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:30px;height:30px;'></a>";
+							 str += "<span style='font-size:12px;'>"+item.mem_email+":</span>"
+							 str += "<span style='margin-left:8px; font-size:14px;' id='brp_content_"+item.brp_seq+"'>"+item.brp_content+"</span>";
+							 if(item.mem_email == '${loginUser.mem_email}') {
+								 str += "&nbsp;<span id='brp_"+item.brp_seq+"'><a href='javascript:void(0)' cp='"+data.currentPage+"' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' id='brp_update_request_"+item.brp_seq+"' onclick='boardReplyUpdateRequest(this);' style='text-decoration:none; font-size:10px;'>수정</a>";
+								 str += "&nbsp;<a href='javascript:void(0)' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' onclick='boardReplyDelete(this);' id='brp_delete_request_"+item.brp_seq+"' style='text-decoration:none; font-size:10px;'>삭제</a></span>";
+							 }
 							 str += "<br/>";
 							 $('#'+c_seq).append(str);
 						 });
@@ -378,11 +511,12 @@ span {
 		 return;
 	 }else {
 		alert("글을 입력해주세요.");
+		replyText.focus();
 		return;
 	 }
  }
  
- function pagingAjax(obj) {//댓글페이징
+ function pagingAjax(obj) {//댓글에 페이징이 존재 할 경우
 	 var uri = $(obj).attr('uri');
 	 var c_seq = $(obj).attr('c_seq');
 	 var b_seq = $(obj).attr('b_seq');
@@ -397,8 +531,13 @@ span {
 				 $.each(data.boardReplyList, function(index, item){
 					 var str = '';
 					 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
-					 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
-					 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
+					 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:30px;height:30px;'></a>";
+					 str += "<span style='font-size:12px;'>"+item.mem_email+":</span>"
+					 str += "<span style='margin-left:8px; font-size:14px;' id='brp_content_"+item.brp_seq+"'>"+item.brp_content+"</span>";
+					 if(item.mem_email == '${loginUser.mem_email}') {
+						 str += "&nbsp;<span id='brp_"+item.brp_seq+"'><a href='javascript:void(0)' cp='"+data.currentPage+"' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' id='brp_update_request_"+item.brp_seq+"' onclick='boardReplyUpdateRequest(this);' style='text-decoration:none; font-size:10px;'>수정</a>";
+						 str += "&nbsp;<a href='javascript:void(0)' b_seq='"+item.b_seq+"' brp_seq='"+item.brp_seq+"' onclick='boardReplyDelete(this);' id='brp_delete_request_"+item.brp_seq+"' style='text-decoration:none; font-size:10px;'>삭제</a></span>";
+					 }
 					 str += "<br/>";
 					 $('#'+c_seq).append(str); 
 				 });
@@ -474,53 +613,7 @@ span {
 	 
  }
  
- function showComment(obj) {//댓글 
-	 var c_seq = $(obj).attr('c_seq');
-	 var b_seq = $(obj).attr('b_seq');
-	 var display = $("#comment_"+b_seq).css('display');
 
-	 if(display == 'none') {
-		 
-		 $.ajax({
-			 url:"/board_rest/list/"+b_seq+"?cp=1",
-			 dataType: "json",
-			 success: function(data) {
-				 
-				 if(data.boardReplyList.length != 0) {
-					 $.each(data.boardReplyList, function(index, item) {
-						 var str = '';
-						 str += "<span style='float:right; font-size:13px; margin-top:8px;'>"+item.brp_rdate+"</span>";
-						 str += "<a><img class='rounded-circle' src='/resources/user_profile_images/"+item.mem_profile+"' alt='...' style='width:40px;height:40px;'></a>";
-						 str += "<span style='margin-left:8px;'>"+item.brp_content+"</span>";
-						 str += "<br/>";
-						 $('#'+c_seq).append(str);
-					 });
-					 
-					 if(data.totalPageCount != 0) {
-						 if(data.totalPageCount != 1) {
-							 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
-							 $('#'+c_seq).append(pagingHtml);
-						 }
-					 }
-					 
-					 $('#'+c_seq).css('display', 'block'); //console.log(flag);
-					 $(obj).attr('value', 'true');
-					 
-					 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
-				 }
-				
-				 
-			 },error: function(err) {
-				 console.log(err);
-			 }
-		 });
-
-	 }else {//댓글 가리기
-		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
-		 $('#'+c_seq).empty();
-	 }
-	 	 
- }
  
  
  function likeAjax(cmd, obj) {//좋아요

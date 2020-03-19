@@ -63,4 +63,15 @@ public class BoardRestServiceImpl implements BoardRestService {
 		return new BoardReplyListResult(cp, ps, boardMapper.selectBoardReplyCount(b_seq), board_reply_list);
 	}
 
+
+	@Override
+	public BoardReplyListResult updateBoardReplyS(long brp_seq, String brp_content, long cp) {
+		boardRestMapper.updateBoardReply(new Board_Reply(brp_seq, brp_content, null, null, -1, null));
+		log.info("#cp: " + cp + ", #brp_seq: " + brp_seq + ", #brp_content: " + brp_content);
+		
+		
+		
+		return null;
+	}
+
 }
