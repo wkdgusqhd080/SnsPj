@@ -42,6 +42,14 @@ insert into MEMBER values('f@naver.com', '1234', SYSDATE, 'defaultProfile.jpg', 
 insert into MEMBER values('g@naver.com', '1234', SYSDATE, 'defaultProfile.jpg', 0);
 insert into MEMBER values('h@naver.com', '1234', SYSDATE, 'defaultProfile.jpg', 0);
 
+
+
+insert into MEMBER values('b1@naver.com', '1234', SYSDATE, 'b1프로필.jpg', 1);
+insert into MEMBER values('b2@naver.com', '1234', SYSDATE, 'b2프로필.jpg', 1);
+insert into MEMBER values('b3@naver.com', '1234', SYSDATE, 'b3프로필.jpg', 1);
+insert into MEMBER values('b4@naver.com', '1234', SYSDATE, 'b4프로필.jpg', 1);
+
+
 commit;
 select * from member;
 
@@ -135,6 +143,8 @@ insert into BOARD_LIKE values('d@naver.com', 5);
 insert into BOARD_LIKE values('a@naver.com', 2);
 
 insert into BOARD_LIKE values('a@naver.com', 1);
+
+insert into BOARD_LIKE values('b@naver.com', 3);
 
 
 select * from board_like where mem_email = 'a@naver.com' and b_seq = 5;
