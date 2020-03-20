@@ -101,8 +101,19 @@ public class BoardServiceImpl implements BoardService {
 		List<Follow> follow_list = boardMapper.selectFollow(mem_email);
 		return new UserSearchListResult(member_list, follow_list);
 	}
-	
-	
-	
+
+	@Override
+	public void insertFollowingS(Follow follow) {
+		log.info("팔로잉 "+follow.getMem_email());
+		log.info("팔로잉 "+follow.getFlr_email());
+		boardMapper.insertFollowing(follow);
+	}
+
+	@Override
+	public void deleteFollowingS(Follow follow) {
+		log.info("언팔 " + follow.getMem_email());
+		log.info("언팔 " + follow.getFlr_email());
+		boardMapper.deleteFollowing(follow);
+	}
 
 }

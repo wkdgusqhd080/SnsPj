@@ -2,11 +2,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 
-
-<form name="f" action="/board/list.do" method="post">
-	<input type="hidden" name="mem_email" value="${loginUser.mem_email}"/>
-</form>
-
 <script>
 if(${requestScope.result} == <%=LoginSet.NO_ID%>){
 	   alert("없는 아이디 입니다 ");
@@ -19,7 +14,7 @@ if(${requestScope.result} == <%=LoginSet.NO_ID%>){
 	   location.href="/";
 }else{
 	   alert("환영합니다 ${sessionScope.loginUser.mem_email} 님");
-	   f.submit();
+	   location.href="/board/list.do";
 }
 	
 </script>

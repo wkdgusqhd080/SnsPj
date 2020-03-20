@@ -67,6 +67,11 @@ span {
 
          <div class="container">
        		
+       		<div align='center' style="margin-bottom:30px;">
+       			<button type="button" id="board_create_btn">글쓰기</button>
+       		</div>
+       		
+       		
        		<div align="center">
        		<input type="text" id="search_text" placeholder="Search" style="height:30px;width:500px;margin-bottom:5%;"/>
        		<button type="button" id="search_btn"><i class="fa fa-search fa-lg" aria-hidden="true" id="search_icon"></i></button>
@@ -207,7 +212,6 @@ span {
           </div><!--/ row -->
          </div><!--/ container -->
  <script>
- 
  current_page = 1;//페이징
  $(window).scroll(function(){//게시판 무한스크롤링
 	 
@@ -304,7 +308,6 @@ span {
 			}
 			
 		});
-
 	 }
 	 
  });
@@ -353,25 +356,19 @@ span {
 			 url:"/board_rest/list/"+b_seq+"?cp=1",
 			 dataType: "json",
 			 success: function(data) {
-				 
 				 if(data.boardReplyList.length != 0) {
-
 					 getBoardReplyReadList(data, obj);//ajax로 가져온 list 반복문 function 실행
-					 
 					 if(data.totalPageCount != 0) {
 						 if(data.totalPageCount != 1) {
 							 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
 							 $('#'+c_seq).append(pagingHtml);
 						 }
 					 }
-					 
 					 $('#'+c_seq).css('display', 'block'); //console.log(flag);
 					 $(obj).attr('value', 'true');
 					 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
 					 
 				 }
-				
-				 
 			 },error: function(err) {
 				 console.log(err);
 			 }
@@ -381,16 +378,13 @@ span {
 		 $('#'+c_seq).css('display', 'none'); //console.log(flag);
 		 $('#'+c_seq).empty();
 	 }
-	 	 
  }
  
  
  function boardReplyDeleteCancel(obj) {//delete 취소
 	 let b_seq = $(obj).attr("b_seq");
 	 let brp_seq = $(obj).attr("brp_seq");
-	 
 	 //$("#reply_text_"+b_seq).val("");
-	 
 	 $("#brp_delete_reply_"+brp_seq).remove();
 	 $("#brp_update_request_"+brp_seq).css('display', 'inline');
 	 $("#brp_delete_request_"+brp_seq).css('display', 'inline');
@@ -414,22 +408,17 @@ span {
 		 contentType: "application/json",
 		 dataType: "json",
 		 success: function(data) {
-			 console.log(data);
-			 
+			 //console.log(data);
 			 var c_seq = "comment_"+b_seq;
-			 
 			 if(data.boardReplyList.length != 0) {
 				 $('#'+c_seq).empty();
-				 
 				 getBoardReplyReadList(data, obj);//ajax로 가져온 list 반복문 function 실행
-				 
 				 if(data.totalPageCount != 0) {
 					 if(data.totalPageCount != 1) {
 						 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
 						 $('#'+c_seq).append(pagingHtml);
 					 }
 				 }
-				 
 				 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
 				 alert("댓글 삭제가 완료되었습니다.");
 			 }else if(data.boardReplyList.length == 0) {
@@ -440,15 +429,9 @@ span {
 				 alert("댓글 삭제가 완료되었습니다.");
 				 
 			 }
-			 
-			
-			 
-			 
 		 }, error: function(err) {
 			 console.log(err);
 		 }
-				 
-		 
 	 });
 	 
  }
@@ -526,20 +509,14 @@ span {
 						 $('#'+c_seq).append(pagingHtml);
 					 }
 				 }
-				 
 				 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
 			 }
-			 
-			
-			 alert("댓글 수정이 완료되었습니다.");
-			 $("#reply_text_"+b_seq).val("");
-			 
-			 $("#brp_update_reply_"+brp_seq).remove();
-			 $("#brp_update_request_"+brp_seq).css('display', 'inline');
-			 $("#brp_delete_request_"+brp_seq).css('display', 'inline');
-			 
-			 
-			 
+				 alert("댓글 수정이 완료되었습니다.");
+				 $("#reply_text_"+b_seq).val("");
+				 
+				 $("#brp_update_reply_"+brp_seq).remove();
+				 $("#brp_update_request_"+brp_seq).css('display', 'inline');
+				 $("#brp_delete_request_"+brp_seq).css('display', 'inline');
 		 }, error: function(err) {
 			 console.log(err);
 		 }
@@ -550,22 +527,18 @@ span {
  function boardReplyUpdateCancel(obj) {//Update 취소
 	 let b_seq = $(obj).attr("b_seq");
 	 let brp_seq = $(obj).attr("brp_seq");
-	 
 	 $("#reply_text_"+b_seq).val("");
-	 
 	 $("#brp_update_reply_"+brp_seq).remove();
 	 $("#brp_update_request_"+brp_seq).css('display', 'inline');
 	 $("#brp_delete_request_"+brp_seq).css('display', 'inline');
-
-	 
  }
  
  
  function boardReplyCreate(obj) {//댓글쓰는부분 Create
 	 var b_seq = $(obj).attr('b_seq');
 	 var replyText = $("#reply_text_"+b_seq);
-	 
-	 if(replyText.val().length != 0 || replyText.val() != "") {
+
+	 if(replyText.val().length != 0) {
 		 var brp_content = replyText.val();
 		 replyText.val("");
 		 $.ajax({
@@ -583,18 +556,14 @@ span {
 					 
 					 if(data.boardReplyList.length != 0) {
 						 $('#'+c_seq).empty();
-
 						 getBoardReplyReadList(data, obj);//ajax로 가져온 list 반복문 function 실행
-					 
 						 if(data.totalPageCount != 0) {
 							 if(data.totalPageCount != 1) {
 								 var pagingHtml = Paging(data.currentPage, data.pageSize, data.totalCount, data.totalPageCount, b_seq, c_seq);
 								 $('#'+c_seq).append(pagingHtml);
 							 }
 						 }
-						 
 						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
-						 
 						 alert("댓글이 작성 되었습니다.");
 						 
 					 }
@@ -612,7 +581,6 @@ span {
 						 }
 						 $('#'+c_seq).css('display', 'block'); //console.log(flag);
 						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
-						 
 						 alert("댓글이 작성 되었습니다.");
 					 }
 				 }
@@ -667,8 +635,8 @@ span {
 	 totalPageCount = parseInt(totalPageCount);
 	 
 	 var pageBlock = 3;
-	 	 
 	 var pRCnt = parseInt(cp / pageBlock);
+	 
 	 if(cp % pageBlock == 0) {
 		 pRCnt = parseInt(cp / pageBlock) - 1;
 	 }
@@ -711,14 +679,10 @@ span {
 		 pagingHtml += "<a href='javascript:void(0)' class='arrow nnext' b_seq='"+b_seq+"' c_seq='"+c_seq+"' uri='/board_rest/list/"+b_seq+"?cp="+totalPageCount+"' onclick=pagingAjax(this)></a>";
 	 }
 	 	 pagingHtml += "</div></div>";
-	 
+	 	 
 	 return pagingHtml;
 	 
  }
- 
-
- 
- 
  function likeAjax(cmd, obj) {//좋아요
 	 var b_seq = $(obj).attr('b_seq');
 	 var str = { 'str' : cmd+","+b_seq+",${loginUser.mem_email}" };
@@ -774,6 +738,13 @@ span {
       $("#btn_logout").on('click', function(){
     	 location.href="/login/logout.do";
       });
+      
+      
+      $("#board_create_btn").on('click', function(){
+    	  location.href="/board/board_create_form.do";
+      });
+      
+      
 
    });
 

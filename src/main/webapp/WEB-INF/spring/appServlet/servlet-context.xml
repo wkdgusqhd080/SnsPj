@@ -20,6 +20,10 @@
 	<resources mapping="/board_file_images/**" location="/resourecs/board_file_images/" />
 	<resources mapping="/user_profile_images/**" location="/resourecs/user_profile_images/" />
 	<resources mapping="/arrow/**" location="/resources/arrow/" />
+	
+	<resources mapping="/file_js/**" location="/resoureces/file_js/" />
+	<resources mapping="/file_css/**" location="/resources/file_css" />
+	<resources mapping="/file_img/**" location="/resources/file_img" />
 
 	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
 	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">

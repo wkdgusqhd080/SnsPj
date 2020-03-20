@@ -27,14 +27,14 @@ public class BoardRestServiceImpl implements BoardRestService {
 	
 	@Override
 	public BoardReplyListResult getBoardReplyListResult(long cp, long b_seq) {
-		Map<String, Object> map = getPagingVo(cp, ps, b_seq);
+		Map<String, Object> map = setPagingVo(cp, ps, b_seq);
 		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);
 		board_reply_list = setProfileBoardReplyList(board_reply_list);
 		return new BoardReplyListResult(cp, ps, boardRestMapper.selectBoardReplyCount(b_seq), board_reply_list);
 	}
 	
 	
-	private Map<String, Object> getPagingVo(long cp, long ps, long b_seq) {
+	private Map<String, Object> setPagingVo(long cp, long ps, long b_seq) {
 		Map<String, Object> map = new HashMap<String, Object>();
 		BoardReplyPagingVo pagingVo = new BoardReplyPagingVo(cp, ps);
 		map.put("b_seq", b_seq); 
@@ -58,7 +58,7 @@ public class BoardRestServiceImpl implements BoardRestService {
 		Board_Reply board_reply = new Board_Reply(-1, brp_content, null, mem_email, b_seq, null);
 		boardRestMapper.insertBoardReply(board_reply);
 		long cp = 1; 
-		Map<String, Object> map = getPagingVo(cp, ps, b_seq);
+		Map<String, Object> map = setPagingVo(cp, ps, b_seq);
 		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);		
 		board_reply_list = setProfileBoardReplyList(board_reply_list);
 		return new BoardReplyListResult(cp, ps, boardMapper.selectBoardReplyCount(b_seq), board_reply_list);
@@ -69,7 +69,7 @@ public class BoardRestServiceImpl implements BoardRestService {
 	public BoardReplyListResult updateBoardReplyS(long b_seq, long brp_seq, String brp_content, long cp) {
 		boardRestMapper.updateBoardReply(new Board_Reply(brp_seq, brp_content, null, null, -1, null));
 		//log.info("#cp: " + cp + ", #brp_seq: " + brp_seq + ", #brp_content: " + brp_content);
-		Map<String, Object> map = getPagingVo(cp,ps, b_seq);
+		Map<String, Object> map = setPagingVo(cp,ps, b_seq);
 		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);
 		board_reply_list = setProfileBoardReplyList(board_reply_list);
 		return new BoardReplyListResult(cp, ps, boardMapper.selectBoardReplyCount(b_seq), board_reply_list);
@@ -79,7 +79,7 @@ public class BoardRestServiceImpl implements BoardRestService {
 	@Override
 	public BoardReplyListResult deleteBoardReplyS(long b_seq, long brp_seq, long cp) {
 		boardRestMapper.deleteBoardReply(brp_seq);
-		Map<String, Object> map = getPagingVo(cp, ps, b_seq);
+		Map<String, Object> map = setPagingVo(cp, ps, b_seq);
 		List<Board_Reply> board_reply_list = boardRestMapper.selectBoardReply(map);		
 		board_reply_list = setProfileBoardReplyList(board_reply_list);
 		return new BoardReplyListResult(cp, ps, boardMapper.selectBoardReplyCount(b_seq), board_reply_list);

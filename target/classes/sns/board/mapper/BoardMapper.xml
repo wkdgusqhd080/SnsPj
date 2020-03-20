@@ -71,7 +71,7 @@
 	
 	<select id="selectUser" parameterType="String" resultType="Member">
 		<![CDATA[
-		SELECT * FROM MEMBER WHERE MEM_EMAIL LIKE LOWER(#{keyword}||'%')
+		SELECT * FROM MEMBER WHERE MEM_EMAIL LIKE LOWER(#{keyword}||'%') AND MEM_STATE = 1
 		]]>
 	</select>
 	
@@ -80,6 +80,18 @@
 		SELECT FLR_EMAIL FROM FOLLOW WHERE MEM_EMAIL = #{mem_email}
 		]]>
 	</select>
+	
+	<insert id="insertFollowing" parameterType="Follow">
+		<![CDATA[
+		insert into FOLLOW (FLR_EMAIL, MEM_EMAIL) values(#{flr_email}, #{mem_email})
+		]]>
+	</insert>
+	
+	<delete id="deleteFollowing" parameterType="Follow">
+		<![CDATA[
+		delete from FOLLOW where MEM_EMAIL = #{mem_email} AND FLR_EMAIL = #{flr_email}
+		]]>
+	</delete>
 	
 	
 	

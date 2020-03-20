@@ -87,6 +87,9 @@ span {
         <section class="hero">
 
          <div class="container">
+       		<div align='center' style='margin-bottom:20px;'>
+       		<input type="button" id="btn_main" value="main_page"/>
+       		</div>
        		
        		<div align="center">
        		<input type="text" id="search_text" placeholder="Search" style="height:30px;width:500px;margin-bottom:5%;"/>
@@ -110,13 +113,13 @@ span {
 				   		<c:when test="${fn:contains(userSearchListResult.follow_list, member.mem_email)}">
 					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
 					   		<div style="margin-top:35px;">
-					   		<button type="button" class="myButton" cnt="${status.count}" mem_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button> 
+					   		<button type="button" class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button> 
 					   		</div>
 				   		</c:when>
 				   		<c:otherwise>
 					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
 					   		<div style="margin-top:35px;">
-					   		<button type="button" class="myButton" cnt="${status.count}" mem_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Follow</span></button>
+					   		<button type="button" class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Follow</span></button>
 					   		</div>
 				   		</c:otherwise>
 				   </c:choose>
@@ -129,6 +132,22 @@ span {
 			</c:forEach>
 		</c:if>
          
+         
+         <c:if test="${empty userSearchListResult.member_list}">
+         	         <div class="col-lg-6 offset-lg-3">
+				<div class="cardbox shadow-lg bg-white">
+				 
+				 <div class="cardbox-heading">
+
+				   <div class="d-flex mr-3">
+						<span>찾으시는 분이 없습니다.</span>
+				   </div>
+				   				
+				 </div><!--/ cardbox-heading -->
+				 </div>
+		</div>
+         </c:if>
+         
 	
       	</div>
          </div><!--/ container -->
@@ -136,16 +155,40 @@ span {
  <script>
  
  function following(obj) {
- 	var mem_email = $(obj).attr("mem_email");	
+ 	var flr_email = $(obj).attr("flr_email");	
  	var cnt = $(obj).attr("cnt");
- 	//console.log(cnt, mem_email);
+ 	//console.log(cnt, flr_email);
  	var flag = $("#follow_"+cnt).text();
- 	if(flag == "Unfollow") {
+ 	if(flag == "Unfollow") {//"언팔누를경우"
  		$("#follow_"+cnt).text("Follow");
- 	}else {
- 		$("#follow_"+cnt).text("Unfollow");
- 	}
+ 		
+ 		$.ajax({
+ 			url:"/board/unfollow.do",
+ 			type:"POST",
+ 			data: flr_email,
+ 			contentType:"application/json",
+ 			success: function(data) {
+ 				//console.log(data);
+ 			}, error: function(err) {
+ 				console.log(err);
+ 			}
+ 		});
  	
+ 	}else {//"팔로잉누를경우"
+ 		$("#follow_"+cnt).text("Unfollow");
+ 		
+ 		$.ajax({
+ 			url: "/board/follow.do",
+ 			type: "POST",
+ 			data: flr_email,
+ 			contentType: "application/json",
+ 			success: function(data){
+ 				//console.log(data);
+ 			}, error: function(err) {
+ 				console.log(err);
+ 			}
+ 		});
+ 	}
  	
   }
  
@@ -153,9 +196,13 @@ span {
  $(document).ready(function(){
      
      $("#btn_logout").on('click', function(){
-   	 location.href="/login/logout.do";
+   	 	location.href="/login/logout.do";
      });
 
+     $("#btn_main").on('click', function(){
+    	 location.href="/board/list.do";
+     });
+     
   });
  
  $("#search_btn").on('click', function(){

@@ -24,4 +24,6 @@ public interface BoardMapper {
 	long selectBoardReplyCount(long b_seq);
 	List<Member> selectUser(String keyword);
 	List<Follow> selectFollow(String mem_email);
+	void deleteFollowing(Follow follow);
+	void insertFollowing(Follow follow);
 }
