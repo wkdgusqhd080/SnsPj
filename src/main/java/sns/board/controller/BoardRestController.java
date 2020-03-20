@@ -16,6 +16,7 @@ import lombok.extern.log4j.Log4j;
 import sns.board.service.BoardRestService;
 import sns.domain.Board_Reply;
 import sns.domain.Member;
+import sns.vo.BoardReplyDeleteVo;
 import sns.vo.BoardReplyListResult;
 import sns.vo.BoardReplyUpdateVo;
 
@@ -46,9 +47,18 @@ public class BoardRestController {
 	
 	@RequestMapping(value="/update/{brp_seq}", method=RequestMethod.PATCH)//put은 해당자원의 전체를 교체 patch는 부분적인 data 업데이트경우
 	public BoardReplyListResult replyUpdate(@PathVariable long brp_seq, @RequestBody BoardReplyUpdateVo boardReplyUpdateVo) {
-		log.info("#cpStr: " + boardReplyUpdateVo.getCpStr() + ", content: " + boardReplyUpdateVo.getBrp_content());
+		//log.info("#cpStr: " + boardReplyUpdateVo.getCpStr() + ", content: " + boardReplyUpdateVo.getBrp_content());
 		long cp = Long.parseLong(boardReplyUpdateVo.getCpStr());
-		return boardRestService.updateBoardReplyS(brp_seq, boardReplyUpdateVo.getBrp_content().trim(), cp);
+		long b_seq = Long.parseLong(boardReplyUpdateVo.getB_seq());
+		return boardRestService.updateBoardReplyS(b_seq, brp_seq, boardReplyUpdateVo.getBrp_content().trim(), cp);
+	}
+	
+	@RequestMapping(value="/delete/{brp_seq}", method=RequestMethod.DELETE)
+	public BoardReplyListResult replyDelete(@PathVariable long brp_seq, @RequestBody BoardReplyDeleteVo boardReplyDeleteVo) {
+		//log.info("#brp_seq: " + brp_seq + ", #cpStr: " + cpStr);
+		long cp = Long.parseLong(boardReplyDeleteVo.getCpStr());
+		long b_seq = Long.parseLong(boardReplyDeleteVo.getB_seq());
+		return boardRestService.deleteBoardReplyS(b_seq, brp_seq, cp);
 	}
 	
 	

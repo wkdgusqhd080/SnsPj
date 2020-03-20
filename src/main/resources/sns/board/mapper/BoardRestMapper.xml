@@ -21,5 +21,10 @@
 	]]>
 	</update>
 	
+	<delete id="deleteBoardReply" parameterType="long">
+	<![CDATA[
+		delete from BOARD_REPLY where BRP_SEQ = #{brp_seq}
+	]]>
+	</delete>
 
 </mapper>

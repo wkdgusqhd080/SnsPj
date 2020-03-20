@@ -7,8 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class BoardReplyUpdateVo {
+public class BoardReplyDeleteVo {
 	private String b_seq;
-	private String brp_content;
 	private String cpStr;
 }
