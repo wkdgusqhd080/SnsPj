@@ -77,7 +77,7 @@
 	
 	<select id="selectFollow" parameterType="String" resultType="Follow">
 		<![CDATA[
-		SELECT * FROM FOLLOW WHERE MEM_EMAIL = #{mem_email}
+		SELECT FLR_EMAIL FROM FOLLOW WHERE MEM_EMAIL = #{mem_email}
 		]]>
 	</select>
 	

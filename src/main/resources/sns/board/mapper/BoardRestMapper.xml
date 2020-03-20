@@ -14,5 +14,12 @@
 		select COUNT(*) from BOARD_REPLY where B_SEQ = #{b_seq}
 	]]>
 	</select>
+	
+	<update id="updateBoardReply" parameterType="Board_Reply">
+	<![CDATA[
+		update BOARD_REPLY set BRP_CONTENT = #{brp_content}, BRP_RDATE = SYSDATE where BRP_SEQ = #{brp_seq}
+	]]>
+	</update>
+	
 
 </mapper>

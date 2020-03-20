@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,6 +17,7 @@ import sns.board.service.BoardRestService;
 import sns.domain.Board_Reply;
 import sns.domain.Member;
 import sns.vo.BoardReplyListResult;
+import sns.vo.BoardReplyUpdateVo;
 
 
 @RestController
@@ -36,11 +38,19 @@ public class BoardRestController {
 	
 	@PostMapping(value="create/{b_seq}")
 	public BoardReplyListResult replyCreate(@PathVariable long b_seq, HttpSession session, @RequestBody String brp_content) {
-		log.info("#brp_content: " + brp_content);
+		//log.info("#brp_content: " + brp_content);
 		Member m = (Member)session.getAttribute("loginUser");
 		String mem_email = m.getMem_email();
-		return boardRestService.insertBoardReplyS(b_seq, mem_email, brp_content);
+		return boardRestService.insertBoardReplyS(b_seq, mem_email, brp_content.trim());
 	}
+	
+	@RequestMapping(value="/update/{brp_seq}", method=RequestMethod.PATCH)//put은 해당자원의 전체를 교체 patch는 부분적인 data 업데이트경우
+	public BoardReplyListResult replyUpdate(@PathVariable long brp_seq, @RequestBody BoardReplyUpdateVo boardReplyUpdateVo) {
+		log.info("#cpStr: " + boardReplyUpdateVo.getCpStr() + ", content: " + boardReplyUpdateVo.getBrp_content());
+		long cp = Long.parseLong(boardReplyUpdateVo.getCpStr());
+		return boardRestService.updateBoardReplyS(brp_seq, boardReplyUpdateVo.getBrp_content().trim(), cp);
+	}
+	
 	
 	
 }

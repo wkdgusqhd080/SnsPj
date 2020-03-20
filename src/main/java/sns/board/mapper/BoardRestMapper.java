@@ -17,4 +17,7 @@ public interface BoardRestMapper {
 	void insertBoardReply(Board_Reply board_reply);
 	//@Select(value= {"select BOARD_REPLY_SEQ.nextval from DUAL"})
 	//long selectBoardReplyNextSeq()
+	
+	
+	void updateBoardReply(Board_Reply board_reply);
 }
