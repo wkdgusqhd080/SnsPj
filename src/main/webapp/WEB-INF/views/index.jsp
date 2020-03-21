@@ -32,6 +32,12 @@
 					<span><i class="fab fa-twitter-square"></i></span>
 				</div>
 				--%>
+				<div>
+				<a href="/kakaoLogin/loginRequest.do">
+				<img style="float:right;" src="/images/kakaolink_btn_small.png"/>
+				</a>
+				</div>
+				
 			</div>
 			<div class="card-body">
 				<form name="f" method="post" action="/login/login.do">
@@ -55,6 +61,9 @@
 						<input type="button" id="loginBtn" value="Login" class="btn float-right login_btn" onclick="loginSubmit()">
 					</div>
 				</form>
+
+				
+				
 			</div>
 			
 			<div style="margin-bottom:20px;" class="card-footer">

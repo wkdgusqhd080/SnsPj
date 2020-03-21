@@ -111,11 +111,12 @@ public class JoinTests {
 		//log.info("#str: " + str);
 	}
 	*/
+	
 	@Test
 	public void joinTest() {
 		Member member = new Member("e@naver.com", "1234", null, "defaultProfile.jpg", 0);
 		mapper.insertMember(member);
-		Mail_Auth mail_auth = new Mail_Auth("e@naver.com", "sksdkfsdf");
+		Mail_Auth mail_auth = new Mail_Auth("e@naver.com", "12345");
 		mapper.insertMailAuth(mail_auth);
 		
 	}

@@ -1,12 +1,19 @@
 package sns.login.service;
 
+
+
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+
+
+import lombok.extern.log4j.Log4j;
 import sns.domain.Member;
 import sns.login.mapper.LoginMapper;
 
 @Service
+@Log4j
 public class LoginServiceImpl implements LoginService {
 
 	@Autowired
@@ -36,5 +43,7 @@ public class LoginServiceImpl implements LoginService {
 		Member member = mapper.selectMember(mem_email);
 		return member;
 	}
+
 	
 }
+

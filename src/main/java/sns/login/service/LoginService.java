@@ -1,5 +1,7 @@
 package sns.login.service;
 
+import java.util.HashMap;
+
 import sns.domain.Member;
 
 public interface LoginService {

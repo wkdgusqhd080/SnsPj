@@ -10,7 +10,11 @@
 		]]>
 	-->
 			<![CDATA[
-			select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) boardlist where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
+			select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
+			from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) boardlist 
+			where rnum > #{startRow} and rnum <= #{endRow} 
+			and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) 
+			order by B_RDATE desc
 			]]>
 	</select>
 	
