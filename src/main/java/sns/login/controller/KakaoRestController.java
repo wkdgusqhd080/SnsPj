@@ -26,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.log4j.Log4j;
+import sns.domain.Member;
 import sns.login.service.LoginService;
 
 import org.codehaus.jackson.JsonProcessingException;
@@ -50,17 +51,19 @@ public class KakaoRestController {
 		log.info("#kakaoNode: " + kakaoNode);
 		JsonNode userInfo = getKakaoUserInfo(kakaoNode.get("access_token"));
 		log.info("#userInfo: " + userInfo);
-		return "";
+		JsonNode kakao_account = userInfo.path("kakao_account");
+		JsonNode properties = userInfo.path("properties");
+		String email = kakao_account.path("email").asText();//db저장 안함. db구조 재설계필요할듯해서 
+		session.setAttribute("loginUser", new Member(email, null, null, null, 1));
+		return "board/list";
 	}
 	
-	private final static String KAKAO_CLIENT_ID = "ecf1dec6a59adf5029bdc3a56575c61c";
-	private final static String KAKAO_REDIRECT_URI = "http://127.0.0.1:8000/kakaoLogin/login.do";
 
 	private String getAuthorizationUrl(HttpSession session) {
 		StringBuffer sb = new StringBuffer();
-		String kakaoUrl = "https://kauth.kakao.com/oauth/authorize?client_id="+KAKAO_CLIENT_ID;
+		String kakaoUrl = "https://kauth.kakao.com/oauth/authorize?client_id="+KakaoLoginSet.CLIENT_ID;
 		sb.append(kakaoUrl);
-		kakaoUrl = "&redirect_uri="+KAKAO_REDIRECT_URI+"&response_type=code";
+		kakaoUrl = "&redirect_uri="+KakaoLoginSet.REDIRECT_URI+"&response_type=code";
 		sb.append(kakaoUrl);
 		return sb.toString();
 	}
@@ -69,8 +72,8 @@ public class KakaoRestController {
 	      final String RequestUrl = "https://kauth.kakao.com/oauth/token";
 	      final List<NameValuePair> postParams = new ArrayList<NameValuePair>();
 	      postParams.add(new BasicNameValuePair("grant_type", "authorization_code"));
-	      postParams.add(new BasicNameValuePair("client_id", KAKAO_CLIENT_ID)); // REST API KEY
-	      postParams.add(new BasicNameValuePair("redirect_uri", KAKAO_REDIRECT_URI)); // 리다이렉트 URI                                                              
+	      postParams.add(new BasicNameValuePair("client_id", KakaoLoginSet.CLIENT_ID)); // REST API KEY
+	      postParams.add(new BasicNameValuePair("redirect_uri", KakaoLoginSet.REDIRECT_URI)); // 리다이렉트 URI                                                              
 	      postParams.add(new BasicNameValuePair("code", autorize_code)); // 로그인 과정중 얻은 code 값
 	      final HttpClient client = HttpClientBuilder.create().build();
 	      final HttpPost post = new HttpPost(RequestUrl);

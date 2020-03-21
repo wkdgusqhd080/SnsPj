@@ -2,8 +2,14 @@ package sns.board.controller;
 
 
 
+import java.io.File;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
@@ -14,7 +20,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import lombok.AllArgsConstructor;
@@ -44,9 +52,6 @@ public class BoardController {
 		model.addAttribute("boardListResult", boardListResult);
 		return "board/list";
 	}
-	
-	
-	
 	@GetMapping("infinityList.do")
 	@ResponseBody
 	public BoardListResult infinityList(long cp, HttpSession session) {
@@ -82,7 +87,6 @@ public class BoardController {
 		return mem_email;
 	}
 	
-	
 	@RequestMapping(value="follow.do", method=RequestMethod.POST)
 	@ResponseBody
 	public String userFollow(@RequestBody String flr_email, HttpSession session) {
@@ -97,11 +101,28 @@ public class BoardController {
 		boardService.deleteFollowingS(new Follow(flr_email, mem_email));
 		return "unfollow";
 	}
-	
 	@RequestMapping(value="/board_create_form.do", method=RequestMethod.GET)
 	public String boardCreateForm() {
-		
 		return "board/create_form";
+	}
+	@RequestMapping(value="fileUpload.do")
+	public void fileUpload(HttpServletResponse response, HttpServletRequest request, @RequestParam("Filedata") MultipartFile Filedata) {
+	   	SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+	   	String newfilename = df.format(new Date()) + Integer.toString((int) (Math.random()*10));
+	   	
+		File f = new File(FilePath.FILE_STORE + newfilename);
+		try { 
+			Filedata.transferTo(f);
+		   	response.getWriter().write(newfilename);
+		} catch (IllegalStateException | IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@PostMapping("boardUpload.do")
+	public String boardUpload() {
+		
+		return "";
 	}
 	
 	

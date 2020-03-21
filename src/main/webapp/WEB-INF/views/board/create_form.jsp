@@ -24,6 +24,10 @@
 <%--폰트 --%>
 <link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
 
+<%-- 파일 --%>
+<link rel="stylesheet" type="text/css" href="/gu-upload/css/guupload.css"/>
+<script type="text/javascript" src="/gu-upload/guuploadManager.js"></script>
+
 <style>
 
 textarea{ 
@@ -31,13 +35,6 @@ textarea{
 	height:300px;
 	resize:none;
 	/* 크기고정 */  /*   resize: horizontal; // 가로크기만 조절가능  resize: vertical;  세로크기만 조절가능  */ 
-}
-.fileDrop {
-	width: 80%;
-	height: 100px;
-	border: 1px dotted gray;
-	background-color: lightslategrey;
-	margin: auto;
 }
 
 </style>
@@ -68,37 +65,80 @@ textarea{
        		<div align='center' style='margin-bottom:20px;'>
        		<input type="button" id="btn_main" value="main_page"/>
        		</div>
-    
+    <form id="form1" name="form1" action="/board/upload_save.jsp" method="post">
        <div class="row">         
-         
          	 <div class="col-lg-6 offset-lg-3" >
 				<div class="cardbox shadow-lg bg-white">
 				 <div class="cardbox-heading">
 				   <div class="d-flex mr-3">
-						<textarea name="b_content"></textarea>
+						<textarea name="b_content" id="b_content"></textarea>
 				   </div>
 				 </div><!--/ cardbox-heading -->
 				 </div>
-			 </div>		 
-		</div>
+			 </div>
+		</div> <!-- . row -->
+		
+			<div class="cardbox shadow-lg bg-white">
+				<div class="cardbox-heading">
+			<div id="attachFile" style="width:100%;"></div>
+			  </div>
+			</div>
 			
+			<input type="hidden" id="realname" name="realname"/>
+			<input type="hidden" id="filename" name="filename"/>
+			<input type="hidden" id="filesize" name="filesize"/>	
+		
+			<div align='center'>
+			<input type="button" value="Submit" onclick='formSubmit()'/>
+			</div>
+	 </form>
          </div><!--/ container -->
           </section>
  <script>
 
  $(document).ready(function(){
-     
      $("#btn_logout").on('click', function(){
    	 	location.href="/login/logout.do";
      });
-
      $("#btn_main").on('click', function(){
     	 location.href="/board/list.do";
      });
-     
   });
+ 
+ var guManager=null;
 
+ window.onload = function() {
+ 	var option = {
+ 		listtype: "thumbnail",
+ 		fileid: "attachFile",
+ 		uploadURL: "fileUpload.do",
+ 		afterFileTransfer: afterFileTransfer
+ 	}
+ 	guManager = new guUploadManager(option);
+ }	
+ function afterFileTransfer(realname, filename, filesize){
 
+		var realname9 = document.getElementById( 'realname' );
+		var filename9 = document.getElementById( 'filename' );
+		var filesize9 = document.getElementById( 'filesize' );
+		
+		realname9.value = realname;
+		filename9.value = filename;
+		filesize9.value = filesize;
+		
+		document.form1.submit();
+	}
+ 
+ function formSubmit(){
+		var b_content = document.getElementById( 'b_content' );
+		if (b_content.value==="") {
+			alert("input!");
+			return;
+		}
+		
+		guManager.uploadFiles();
+	}
+ 
   </script>
   
        
