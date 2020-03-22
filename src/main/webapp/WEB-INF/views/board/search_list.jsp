@@ -113,13 +113,27 @@ span {
 				   		<c:when test="${fn:contains(userSearchListResult.follow_list, member.mem_email)}">
 					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&nbsp;
 					   		<div style="margin-top:35px;">
-					   		<button type="button" class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button> 
+					   		<c:choose>
+					   		<c:when test="${loginUser.mem_email eq member.mem_email}">
+					   		<button type="button" disabled class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button>
+					   		</c:when>
+					   		<c:otherwise>
+					   		<button type="button" class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Unfollow</span></button>
+					   		</c:otherwise>
+					   		 </c:choose>
 					   		</div>
 				   		</c:when>
 				   		<c:otherwise>
 					   		&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;&emsp;
 					   		<div style="margin-top:35px;">
+					   		<c:choose>
+					   		<c:when test="${loginUser.mem_email eq member.mem_email}">
+					   		<button type="button" disabled class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Follow</span></button>
+					   		</c:when>
+					   		<c:otherwise>
 					   		<button type="button" class="myButton" cnt="${status.count}" flr_email="${member.mem_email}" onclick="following(this)"><span id="follow_${status.count}">Follow</span></button>
+					   		</c:otherwise>
+					   		</c:choose>
 					   		</div>
 				   		</c:otherwise>
 				   </c:choose>

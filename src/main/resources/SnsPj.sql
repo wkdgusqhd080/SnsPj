@@ -97,6 +97,11 @@ insert into BOARD values(BOARD_SEQ.nextval, '하품이 나온다.', 'c@naver.com', '20
 insert into BOARD values(BOARD_SEQ.nextval, '오늘은 즐거운날이에요.', 'b@naver.com', '2020-03-02');
 
 
+insert into BOARD values(BOARD_SEQ.nextval, '취업을 해야합니다', 'b1@naver.com', '2020-01-15');
+insert into BOARD values(BOARD_SEQ.nextval, '프로그래밍 재밌어요', 'b1@naver.com', '2020-02-08');
+insert into BOARD values(BOARD_SEQ.nextval, '취업 할 수 있다', 'b2@naver.com', '2020-03-03');
+
+
 commit;
 select * from BOARD order by B_RDATE desc;
 

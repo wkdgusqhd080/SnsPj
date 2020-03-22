@@ -75,6 +75,12 @@ insert into FOLLOW values('d@naver.com', 'b@naver.com');
 commit;
 select * from FOLLOW;
 
+
+
+--delete from FOLLOW where mem_email = 'a@naver.com' and FLR_EMAIL = 'b@naver.com';
+
+
+
 create table BOARD(
 B_SEQ number constraint BOARD_PK primary key,
 B_CONTENT varchar2(3000),
@@ -91,8 +97,31 @@ insert into BOARD values(BOARD_SEQ.nextval, '하품이 나온다.', 'c@naver.com', '20
 insert into BOARD values(BOARD_SEQ.nextval, '오늘은 즐거운날이에요.', 'b@naver.com', '2020-03-02');
 
 
+insert into BOARD values(BOARD_SEQ.nextval, '취업을 해야합니다', 'b1@naver.com', '2020-01-15');
+insert into BOARD values(BOARD_SEQ.nextval, '프로그래밍 재밌어요', 'b1@naver.com', '2020-02-08');
+insert into BOARD values(BOARD_SEQ.nextval, '취업 할 수 있다', 'b2@naver.com', '2020-03-03');
+
+
 commit;
 select * from BOARD order by B_RDATE desc;
+
+select * from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board order by B_RDATE desc) where rnum > 0 and rnum <= 3 and MEM_EMAIL = 'b@naver.com';
+
+--myboardlist 쿼리
+select A.B_SEQ, A.B_CONTENT from (select ROWNUM rnum, BOARD.* from BOARD where mem_email = 'b@naver.com' order by b_rdate desc) A where rnum > 0 and rnum <= 3 and A.MEM_EMAIL = 'b@naver.com';
+
+
+--팔로잉 글들 list 쿼리
+select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'yyyy-MM-dd') 
+from (select ROWNUM rnum, board.* from (select * from board where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board) boardlist 
+where rnum > 0 and rnum <= 3 and 
+mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
+
+
+
+
+
+
 
 
 --select B_SEQ, B_CONTENT, MEM_EMAIL, B_RDATE from (select ROWNUM rnum, aa.* from (select * from BOARD where MEM_EMAIL = 'a@naver.com' order by B_RDATE desc) aa) where rnum > 0 and rnum <= 3;
@@ -103,26 +132,26 @@ select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardl
 
 create table BOARD_FILE(
 BF_SEQ number constraint BOARD_FILE_PK primary key,
-BF_OFNAME varchar2(300),
-BF_FNAME varchar2(300),
-BF_SIZE number,
+BF_OFNAME varchar2(1000),
+BF_FNAME varchar2(1000),
+BF_SIZE varchar2(1000),
 B_SEQ number constraint BOARD_FILE_FK references BOARD(B_SEQ) on delete cascade
 );
 create sequence BOARD_FILE_SEQ minvalue 0 start with 0 increment by 1 nocache;
 
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일1.jpg', '파일1.jpg', 1000, 5);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일2,jpg', '파일2.jpg', 1000, 5);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일3,jpg', '파일3.jpg', 1000, 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일1.jpg', '파일1.jpg', '1000', 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일2,jpg', '파일2.jpg', '1000', 5);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일3,jpg', '파일3.jpg', '1000', 5);
 
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일4.jpg', '파일4.jpg', 1000, 2);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일5,jpg', '파일5.jpg', 1000, 2);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일6,jpg', '파일6.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일4.jpg', '파일4.jpg', '1000', 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일5,jpg', '파일5.jpg', '1000', 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일6,jpg', '파일6.jpg', '1000', 2);
 
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일7.jpg', '파일7.jpg', 1000, 1);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일8,jpg', '파일8.jpg', 1000, 1);
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일9,jpg', '파일9.jpg', 1000, 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일7.jpg', '파일7.jpg', '1000', 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일8,jpg', '파일8.jpg', '1000', 1);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일9,jpg', '파일9.jpg', '1000', 1);
 
-insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일10.jpg', '파일10.jpg', 1000, 2);
+insert into BOARD_FILE values(BOARD_FILE_SEQ.nextval, '파일10.jpg', '파일10.jpg', '1000', 2);
 
 
 commit;
@@ -202,8 +231,6 @@ insert into BOARD_REPLY values(BOARD_REPLY_SEQ.nextval, '취준 화이팅', '2020-01-
 commit;
 
 select boardreply.* from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
-
-
 
 select boardreply.brp_seq, boardreply.brp_content, TO_CHAR(boardreply.brp_rdate, 'YYYY-MM-DD') as brp_rdate, boardreply.mem_email, boardreply.b_seq from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
 
