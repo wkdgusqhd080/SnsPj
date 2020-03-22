@@ -11,6 +11,6 @@ public class Board_File {
 	private long bf_seq;
 	private String bf_ofname;
 	private String bf_fname;
-	private long bf_size;
+	private String bf_size;
 	private long b_seq;
 }

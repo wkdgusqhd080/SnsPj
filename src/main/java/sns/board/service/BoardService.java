@@ -7,6 +7,7 @@ import sns.domain.Member;
 import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
 import sns.vo.BoardPagingVo;
+import sns.vo.InsertBoardVo;
 import sns.vo.UserSearchListResult;
 
 public interface BoardService {
@@ -15,4 +16,5 @@ public interface BoardService {
 	UserSearchListResult getUserSearchListResult(String keyword, String mem_email);
 	void insertFollowingS(Follow follow);
 	void deleteFollowingS(Follow follow);
+	BoardListResult insertBoardS(InsertBoardVo insertBoardVo);
 }

@@ -3,6 +3,9 @@ package sns.board.mapper;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Select;
+
 import sns.domain.Board;
 import sns.domain.Board_File;
 import sns.domain.Board_Like;
@@ -26,4 +29,15 @@ public interface BoardMapper {
 	List<Follow> selectFollow(String mem_email);
 	void deleteFollowing(Follow follow);
 	void insertFollowing(Follow follow);
+	
+	@Insert(value= {"insert into BOARD (B_SEQ, B_CONTENT, MEM_EMAIL, B_RDATE) values (BOARD_SEQ.nextval, #{b_content}, #{mem_email}, SYSDATE)"})
+	void insertBoard(Board board);
+	@Insert(value= {"insert into BOARD_FILE (BF_SEQ, BF_OFNAME, BF_FNAME, BF_SIZE, B_SEQ) values (BOARD_FILE_SEQ.nextval, #{bf_ofname}, #{bf_fname}, #{bf_size}, #{b_seq}"})
+	void insertBoardFile(Board_File board_file);
+	@Select(value= {"select BOARD_SEQ.currval from DUAL"})
+	long selectBoardSeqCurrval();
+	@Select(value = {"select * from (select ROWNUM rnum, board.* from "
+			+ "(select * from BOARD where mem_email = #{mem_email} order by B_RDATE desc) board) "
+			+ "where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL = #{mem_email}"})
+	List<Board> selectMyBoard(Map map);
 }

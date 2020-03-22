@@ -44,6 +44,15 @@ public class KakaoRestController {
 		return "redirect:"+getAuthorizationUrl(session);
 	}
 	
+	private String getAuthorizationUrl(HttpSession session) {
+		StringBuffer sb = new StringBuffer();
+		String kakaoUrl = "https://kauth.kakao.com/oauth/authorize?client_id="+KakaoLoginSet.CLIENT_ID;
+		sb.append(kakaoUrl);
+		kakaoUrl = "&redirect_uri="+KakaoLoginSet.REDIRECT_URI+"&response_type=code";
+		sb.append(kakaoUrl);
+		return sb.toString();
+	}
+	
 	@GetMapping("login.do")
 	public String login(@RequestParam("code") String code, HttpSession session) {
 		log.info("#code: " + code);
@@ -56,16 +65,6 @@ public class KakaoRestController {
 		String email = kakao_account.path("email").asText();//db저장 안함. db구조 재설계필요할듯해서 
 		session.setAttribute("loginUser", new Member(email, null, null, null, 1));
 		return "board/list";
-	}
-	
-
-	private String getAuthorizationUrl(HttpSession session) {
-		StringBuffer sb = new StringBuffer();
-		String kakaoUrl = "https://kauth.kakao.com/oauth/authorize?client_id="+KakaoLoginSet.CLIENT_ID;
-		sb.append(kakaoUrl);
-		kakaoUrl = "&redirect_uri="+KakaoLoginSet.REDIRECT_URI+"&response_type=code";
-		sb.append(kakaoUrl);
-		return sb.toString();
 	}
 	
 	private JsonNode getAccessToken(String autorize_code) {
@@ -96,27 +95,27 @@ public class KakaoRestController {
 	      return returnNode;
 	   }
 	   
-	   private JsonNode getKakaoUserInfo(JsonNode accessToken) {
-	      final String RequestUrl = "https://kapi.kakao.com/v2/user/me";
-	      final HttpClient client = HttpClientBuilder.create().build();
-	      final HttpPost post = new HttpPost(RequestUrl);
-	      // add header
-	      post.addHeader("Authorization", "Bearer " + accessToken);
-	      JsonNode returnNode = null;
-	      try {
-	         final HttpResponse response = client.execute(post);
-	         // JSON 형태 반환값 처리
-	         ObjectMapper mapper = new ObjectMapper();
-	         returnNode = mapper.readTree(response.getEntity().getContent());
-	      } catch (ClientProtocolException e) {
-	         e.printStackTrace();
-	      } catch (IOException e) {
-	         e.printStackTrace();
-	      } finally {
-	         // clear resources
-	      }
-	      return returnNode;
-	   }
+	private JsonNode getKakaoUserInfo(JsonNode accessToken) {
+		  final String RequestUrl = "https://kapi.kakao.com/v2/user/me";
+		  final HttpClient client = HttpClientBuilder.create().build();
+		  final HttpPost post = new HttpPost(RequestUrl);
+		  // add header
+		  post.addHeader("Authorization", "Bearer " + accessToken);
+		  JsonNode returnNode = null;
+		  try {
+		     final HttpResponse response = client.execute(post);
+		     // JSON 형태 반환값 처리
+		     ObjectMapper mapper = new ObjectMapper();
+		     returnNode = mapper.readTree(response.getEntity().getContent());
+		  } catch (ClientProtocolException e) {
+		     e.printStackTrace();
+		  } catch (IOException e) {
+		     e.printStackTrace();
+		  } finally {
+		     // clear resources
+		      }
+		      return returnNode;
+	}
 	
 
 }

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.log4j.Log4j;
 import sns.board.mapper.BoardMapper;
@@ -18,6 +19,7 @@ import sns.domain.Member;
 import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
 import sns.vo.BoardPagingVo;
+import sns.vo.InsertBoardVo;
 import sns.vo.UserSearchListResult;
 
 @Service
@@ -66,7 +68,7 @@ public class BoardServiceImpl implements BoardService {
 						b.setBoard_file_list(board_file_list2);
 					}
 				
-		}
+		}//for
 				//log.info("#boardList: " + boardList);
 		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
 	}
@@ -104,16 +106,33 @@ public class BoardServiceImpl implements BoardService {
 
 	@Override
 	public void insertFollowingS(Follow follow) {
-		log.info("팔로잉 "+follow.getMem_email());
-		log.info("팔로잉 "+follow.getFlr_email());
+//		log.info("팔로잉 "+follow.getMem_email());
+//		log.info("팔로잉 "+follow.getFlr_email());
 		boardMapper.insertFollowing(follow);
 	}
 
 	@Override
 	public void deleteFollowingS(Follow follow) {
-		log.info("언팔 " + follow.getMem_email());
-		log.info("언팔 " + follow.getFlr_email());
+//		log.info("언팔 " + follow.getMem_email());
+//		log.info("언팔 " + follow.getFlr_email());
 		boardMapper.deleteFollowing(follow);
+	}
+
+	@Override
+	@Transactional
+	public BoardListResult insertBoardS(InsertBoardVo insertBoardVo) {
+		boardMapper.insertBoard(new Board(-1, insertBoardVo.getB_content(), insertBoardVo.getMem_email(),
+								null, null, -1, null, null, -1));
+		long b_seq = boardMapper.selectBoardSeqCurrval();//log.info("#b_seq: " + b_seq);
+		if(insertBoardVo.getOfilelist().length != 0) {
+			for (int i=0; i<insertBoardVo.getOfilelist().length; i++) {
+				boardMapper.insertBoardFile(new Board_File(-1, insertBoardVo.getOfilelist()[i],
+						insertBoardVo.getFilelist()[i], insertBoardVo.getSizelist()[i]+"byte" , b_seq));
+			}
+		}
+		
+		
+		return null;
 	}
 
 }

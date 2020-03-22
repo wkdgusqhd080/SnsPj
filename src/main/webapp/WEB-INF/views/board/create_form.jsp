@@ -65,7 +65,7 @@ textarea{
        		<div align='center' style='margin-bottom:20px;'>
        		<input type="button" id="btn_main" value="main_page"/>
        		</div>
-    <form id="form1" name="form1" action="/board/upload_save.jsp" method="post">
+    <form id="form1" name="form1" action="/board/boardUpload.do" method="post">
        <div class="row">         
          	 <div class="col-lg-6 offset-lg-3" >
 				<div class="cardbox shadow-lg bg-white">
@@ -77,11 +77,13 @@ textarea{
 				 </div>
 			 </div>
 		</div> <!-- . row -->
-		
-			<div class="cardbox shadow-lg bg-white">
-				<div class="cardbox-heading">
-			<div id="attachFile" style="width:100%;"></div>
-			  </div>
+			
+			<div align="center">
+				<div class="cardbox shadow-lg bg-white" style="width:550px;">
+					<div class="cardbox-heading">
+				<div id="attachFile" style="width:500px;"></div>
+				    </div>
+				</div>
 			</div>
 			
 			<input type="hidden" id="realname" name="realname"/>
@@ -137,6 +139,10 @@ textarea{
 		}
 		
 		guManager.uploadFiles();
+		
+		
+		
+		
 	}
  
   </script>
