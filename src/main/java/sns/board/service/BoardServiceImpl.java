@@ -39,7 +39,12 @@ public class BoardServiceImpl implements BoardService {
 
 		List<Board> boardList = new ArrayList<Board>();
 		boardList = boardMapper.selectBoard(map);
-		
+		boardList = setBoardList(boardList);
+	    //log.info("#boardList: " + boardList);
+		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
+	}
+	
+	private List<Board> setBoardList(List<Board> boardList) {
 		for(Board b : boardList) {
 			String mem_profile = boardMapper.selectMemberProfile(b.getMem_email());
 			b.setMem_profile(mem_profile);
@@ -69,9 +74,10 @@ public class BoardServiceImpl implements BoardService {
 					}
 				
 		}//for
-				//log.info("#boardList: " + boardList);
-		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
+		return boardList;
+
 	}
+	
 
 	@Override
 	public BoardLikeVo likePlusMinus(long b_seq, String mem_email, String cmd) {
@@ -131,8 +137,18 @@ public class BoardServiceImpl implements BoardService {
 			}
 		}
 		
+		long cp = 1; long ps = 3;
+		BoardPagingVo boardPagingVo = new BoardPagingVo(cp, ps);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mem_email", insertBoardVo.getMem_email());
+		map.put("startRow", boardPagingVo.getStartRow());
+		map.put("endRow", boardPagingVo.getEndRow());
 		
-		return null;
+		List<Board> boardList = new ArrayList<Board>();
+		boardList = boardMapper.selectMyBoard(map);
+		boardList = setBoardList(boardList);
+		
+		return new BoardListResult(cp, ps, boardMapper.selectMyBoardTotalCount(insertBoardVo.getMem_email()), boardList);
 	}
 
 }

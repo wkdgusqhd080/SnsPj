@@ -124,8 +124,11 @@ public class BoardController {
 			e.printStackTrace();
 		}
 	}
+	
+	@GetMapping("")
+	
 	@PostMapping("boardUpload.do")
-	public String boardUpload(HttpServletRequest request, HttpSession session) {
+	public String boardUpload(HttpServletRequest request, HttpSession session, Model model) {
 		String mem_email = getClientEmail(session);
 		String b_content = request.getParameter("b_content");
 		String filename = request.getParameter("filename");
@@ -134,9 +137,9 @@ public class BoardController {
     	String[] sizelist = realname.split(",");//파일사이즈
     	String[] ofilelist = filename.split(",");//오리지날파일이름
     	String[] filelist = filesize.split(",");//저장되는파일이름
-    	boardService.insertBoardS(new InsertBoardVo(mem_email, b_content, ofilelist, filelist, sizelist));
-    	
-		return "";
+    	BoardListResult boardListResult = boardService.insertBoardS(new InsertBoardVo(mem_email, b_content, ofilelist, filelist, sizelist));
+    	model.addAttribute("boardListResult", boardListResult);
+    	return "board/my_board_list";
 	}
 	
 	

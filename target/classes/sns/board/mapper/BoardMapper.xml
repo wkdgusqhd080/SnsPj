@@ -11,8 +11,7 @@
 	-->
 			<![CDATA[
 			select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
-			from (select ROWNUM rnum, board.* 
-			from (select * from BOARD where 
+			from (select ROWNUM rnum, board.* from (select * from BOARD where 
 			mem_email in (select flr_email from follow where mem_email = #{mem_email})
 			order by B_RDATE desc) board) boardlist 
 			where rnum > #{startRow} and rnum <= #{endRow} 
@@ -99,8 +98,5 @@
 		delete from FOLLOW where MEM_EMAIL = #{mem_email} AND FLR_EMAIL = #{flr_email}
 		]]>
 	</delete>
-	
-	
-	
-	
+
 </mapper>
