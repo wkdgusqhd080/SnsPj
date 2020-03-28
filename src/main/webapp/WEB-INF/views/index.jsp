@@ -54,9 +54,11 @@
 						</div>
 						<input type="password" class="form-control" id="mem_pwd" name="mem_pwd" placeholder="Enter your Password">
 					</div>
+					<%-- 
 					<div class="row align-items-center remember">
 						<input type="checkbox">Remember Me
 					</div>
+					--%>
 					<div class="form-group">
 						<input type="button" id="loginBtn" value="Login" class="btn float-right login_btn" onclick="loginSubmit()">
 					</div>

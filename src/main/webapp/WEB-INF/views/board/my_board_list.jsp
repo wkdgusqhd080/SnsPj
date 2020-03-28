@@ -5,77 +5,7 @@
 
 <jsp:useBean id="now" class="java.util.Date" />
 <fmt:formatDate var="today" value="${now}" pattern="yyyy-MM-dd HH:mm:ss"/>
-
-
-<!DOCTYPE html>
-<head>
-
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<%-- <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>--%>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<!------ Include the above in your HEAD tag ---------->
-<link href="https://fonts.googleapis.com/css?family=Rokkitt" rel="stylesheet"> 
-<link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-<link href="/css/board.css" rel="stylesheet">
-
-<%--font Awesome 참조 --%>
-<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
-<%--bxSlider--%>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.css">
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<script src="https://cdn.jsdelivr.net/bxslider/4.2.12/jquery.bxslider.min.js"></script>
-
-<%--폰트 --%>
-<link href="https://fonts.googleapis.com/css?family=Do+Hyeon&display=swap" rel="stylesheet">
-<style>
-@import url('https://fonts.googleapis.com/css?family=Yeon+Sung&display=swap');
-span {
-		font-family: 'Yeon Sung', cursive;
-		font-size: 17px;
-	}
-
-</style>
-
- <%--좋아요버튼css--%>
-<link href="/css/btn_like.css" rel="stylesheet">
-<%--페이징css --%>
-<link href="/css/paging.css" rel="stylesheet">
-
-
-
-        <c:if test="${!empty loginUser}">
-        	<div style="float:right;">
-        	안녕하세요. ${loginUser.mem_email}님
-        	<input type="button" id="btn_logout" value="logout"/>
-        	</div>
-        </c:if>
-        
-        <c:if test="${empty loginUser}">
-        	<script>
-        		location.href="/login/logout.do";
-        	</script>
-        </c:if>
-</head>
-
-		<!--[if IE 7]>
-		<link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome-ie7.min.css">
-		<![endif]-->
-	    <!-- ==============================================
-	    Hero
-	    =============================================== -->
-        <section class="hero">
-
-         <div class="container">
-       		
-       		<div align='center' style="margin-bottom:30px;">
-       			<button type="button" id="board_create_btn">글쓰기</button>
-       		</div>
-       		
-       		
-       		<div align="center">
-       		<input type="text" id="search_text" placeholder="Search" style="height:30px;width:500px;margin-bottom:5%;"/>
-       		<button type="button" id="search_btn"><i class="fa fa-search fa-lg" aria-hidden="true" id="search_icon"></i></button>
-       		</div>
+<jsp:include page="board_header.jsp"></jsp:include>
        
           <div class="row">	
 		  
@@ -223,7 +153,7 @@ span {
 		//console.log(++current_page);
 		++current_page;
 		$.ajax({
-			url: "/board/.do?cp="+current_page,
+			url: "/board/infinityMyBoardList.do?cp="+current_page,
 			contentType: "application/json",
 			dataType: "json",
 			success: function(data) {
@@ -420,13 +350,13 @@ span {
 					 }
 				 }
 				 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
-				 alert("댓글 삭제가 완료되었습니다.");
+				 //alert("댓글 삭제가 완료되었습니다.");
 			 }else if(data.boardReplyList.length == 0) {
 				 
 				 $('#'+c_seq).css('display', 'none'); //console.log(flag);
 				 $('#'+c_seq).empty();
 				 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
-				 alert("댓글 삭제가 완료되었습니다.");
+				 //alert("댓글 삭제가 완료되었습니다.");
 				 
 			 }
 		 }, error: function(err) {
@@ -511,7 +441,7 @@ span {
 				 }
 				 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
 			 }
-				 alert("댓글 수정이 완료되었습니다.");
+				 //alert("댓글 수정이 완료되었습니다.");
 				 $("#reply_text_"+b_seq).val("");
 				 
 				 $("#brp_update_reply_"+brp_seq).remove();
@@ -564,7 +494,7 @@ span {
 							 }
 						 }
 						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount); //tot 갱신
-						 alert("댓글이 작성 되었습니다.");
+						 //alert("댓글이 작성 되었습니다.");
 						 
 					 }
 				 }else if(display == 'none') {//댓글이 안나와 있는경우
@@ -581,7 +511,7 @@ span {
 						 }
 						 $('#'+c_seq).css('display', 'block'); //console.log(flag);
 						 $('#comment_cnt_tot_'+b_seq).text(data.totalCount);
-						 alert("댓글이 작성 되었습니다.");
+						 //alert("댓글이 작성 되었습니다.");
 					 }
 				 }
 			 },error: function(err) {
@@ -744,8 +674,17 @@ span {
     	  location.href="/board/board_create_form.do";
       });
       
+      $("#my_board_btn").on('click', function() {
+    	  location.href="/board/my_board_list.do";
+      });
       
-
+      $("#main_feed_btn").on('click',function() {
+    	  location.href="/board/list.do";
+      });
+	
+      $("#my_info_btn").on('click', function(){
+    	  location.href="/board/my_info.do";
+      });
    });
 
   </script>

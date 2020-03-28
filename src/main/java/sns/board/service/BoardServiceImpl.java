@@ -8,6 +8,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import lombok.extern.log4j.Log4j;
 import sns.board.mapper.BoardMapper;
@@ -129,11 +130,14 @@ public class BoardServiceImpl implements BoardService {
 	public BoardListResult insertBoardS(InsertBoardVo insertBoardVo) {
 		boardMapper.insertBoard(new Board(-1, insertBoardVo.getB_content(), insertBoardVo.getMem_email(),
 								null, null, -1, null, null, -1));
+		
 		long b_seq = boardMapper.selectBoardSeqCurrval();//log.info("#b_seq: " + b_seq);
-		if(insertBoardVo.getOfilelist().length != 0) {
-			for (int i=0; i<insertBoardVo.getOfilelist().length; i++) {
-				boardMapper.insertBoardFile(new Board_File(-1, insertBoardVo.getOfilelist()[i],
-						insertBoardVo.getFilelist()[i], insertBoardVo.getSizelist()[i]+"byte" , b_seq));
+
+		for (int i=0; i<insertBoardVo.getOfilelist().length; i++) {
+			if(insertBoardVo.getOfilelist()[i] != "") {
+			log.info("#getOflielist : " + insertBoardVo.getOfilelist()[i]);
+			boardMapper.insertBoardFile(new Board_File(-1, insertBoardVo.getOfilelist()[i],
+					insertBoardVo.getFilelist()[i], insertBoardVo.getSizelist()[i]+"byte" , b_seq));
 			}
 		}
 		
@@ -149,6 +153,32 @@ public class BoardServiceImpl implements BoardService {
 		boardList = setBoardList(boardList);
 		
 		return new BoardListResult(cp, ps, boardMapper.selectMyBoardTotalCount(insertBoardVo.getMem_email()), boardList);
+	}
+
+	@Override
+	public BoardListResult getMyBoardListResult(long cp, long ps, String mem_email) {
+		BoardPagingVo boardPagingVo = new BoardPagingVo(cp, ps);
+		Map<String, Object> map = new HashMap<String, Object>();
+		
+		map.put("mem_email", mem_email);
+		map.put("startRow", boardPagingVo.getStartRow());
+		map.put("endRow", boardPagingVo.getEndRow());
+
+		List<Board> boardList = new ArrayList<Board>();
+		boardList = boardMapper.selectMyBoard(map);
+		boardList = setBoardList(boardList);
+	    //log.info("#boardList: " + boardList);
+		return new BoardListResult(cp, ps, boardMapper.selectMyBoardTotalCount(mem_email), boardList);
+	}
+
+	@Override
+	public Member selectMemberS(String mem_email) {
+		return boardMapper.selectMember(mem_email);
+	}
+
+	@Override
+	public void updateProfileImageS(String mem_email, String mem_profile) {
+		boardMapper.updateProfileImage(new Member(mem_email, null, null, mem_profile, -1));
 	}
 
 }

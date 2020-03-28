@@ -63,7 +63,8 @@ textarea{
 
          <div class="container">
        		<div align='center' style='margin-bottom:20px;'>
-       		<input type="button" id="btn_main" value="main_page"/>
+       		    <input type="button" id=main_feed_btn value="메인피드"/>
+       			<button type="button" id="my_board_btn">나의게시글</button>
        		</div>
     <form id="form1" name="form1" action="/board/boardUpload.do" method="post">
        <div class="row">         
@@ -102,8 +103,13 @@ textarea{
      $("#btn_logout").on('click', function(){
    	 	location.href="/login/logout.do";
      });
-     $("#btn_main").on('click', function(){
-    	 location.href="/board/list.do";
+     
+     $("#my_board_btn").on('click', function() {
+   	  location.href="/board/my_board_list.do";
+     });
+     
+     $("#main_feed_btn").on('click',function() {
+   	  location.href="/board/list.do";
      });
   });
  
@@ -139,9 +145,6 @@ textarea{
 		}
 		
 		guManager.uploadFiles();
-		
-		
-		
 		
 	}
  

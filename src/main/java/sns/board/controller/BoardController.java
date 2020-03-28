@@ -3,6 +3,7 @@ package sns.board.controller;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -32,7 +33,6 @@ import sns.domain.Follow;
 import sns.domain.Member;
 import sns.vo.BoardLikeVo;
 import sns.vo.BoardListResult;
-import sns.vo.BoardPagingVo;
 import sns.vo.InsertBoardVo;
 
 @Log4j
@@ -124,9 +124,7 @@ public class BoardController {
 			e.printStackTrace();
 		}
 	}
-	
-	@GetMapping("")
-	
+
 	@PostMapping("boardUpload.do")
 	public String boardUpload(HttpServletRequest request, HttpSession session, Model model) {
 		String mem_email = getClientEmail(session);
@@ -138,10 +136,111 @@ public class BoardController {
     	String[] ofilelist = filename.split(",");//오리지날파일이름
     	String[] filelist = filesize.split(",");//저장되는파일이름
     	BoardListResult boardListResult = boardService.insertBoardS(new InsertBoardVo(mem_email, b_content, ofilelist, filelist, sizelist));
-    	model.addAttribute("boardListResult", boardListResult);
-    	return "board/my_board_list";
+//    	model.addAttribute("boardListResult", boardListResult);
+//    	return "redirect:/board/my_board_list.do";
+    	return "board/board_create_msg";
 	}
 	
+	@GetMapping("my_board_list.do")
+	public String myBoardList(HttpSession session, Model model) {
+		String mem_email = getClientEmail(session);
+		long cp = 1;
+		BoardListResult boardListResult = boardService.getMyBoardListResult(cp, PS, mem_email);//selectMyBoardS 만들어야함.
+		model.addAttribute("boardListResult", boardListResult);
+		return "board/my_board_list";
+	}
 	
+	@GetMapping("infinityMyBoardList.do")
+	@ResponseBody
+	public BoardListResult infinityMyBoardList(long cp, HttpSession session) {
+		String mem_email = getClientEmail(session);
+		return boardService.getMyBoardListResult(cp, PS, mem_email);
+	}
+	@RequestMapping(value="my_info.do", method=RequestMethod.GET)
+	public String myProfile(HttpSession session, Model model) {
+		String mem_email = getClientEmail(session);
+		Member member = boardService.selectMemberS(mem_email);
+		model.addAttribute("member", member);
+		return "board/my_info";
+	}
+	
+	@PostMapping("my_info_change.do")
+	public String myInfoChange(MultipartFile profile_file, String before_profile_file, HttpSession session) {
+		String mem_email = getClientEmail(session);
+		if(!profile_file.getOriginalFilename().equals("")) {//프사 등록 시
+			//log.info("#profile_file: " + profile_file.getOriginalFilename());
+			File file = new File(FilePath.PROFILE_FILE_STORE, before_profile_file);
+			//log.info("#기존프사: " + file.getName());
+			if(file.getName().equals("defaultProfile.jpg")) {//기본프사 였을경우
+				//log.info("기본프사 였는데 프사바꿀경우.");//기본프사는 지우지 않는다..
+				String mem_profile = saveStore(profile_file);// 그리고 새로운 파일을 저장한다.
+				boardService.updateProfileImageS(mem_email, mem_profile);
+			}else {
+				//log.info("기본프사 아닌데 프사바꿀경우.");
+				file.delete();//그전 프사파일은 지운다.
+				String mem_profile = saveStore(profile_file);//그리고 새로운파일을 저장한다.
+				boardService.updateProfileImageS(mem_email, mem_profile);
+			}
+
+		}else {//프사 등록 아닐 시
+			
+		}
+		return "board/my_info_msg";
+	}
+	
+	private String saveStore(MultipartFile f) {
+		//log.info("#service saveStore() f: " + f);
+		String ofname = f.getOriginalFilename();
+		int idx = ofname.lastIndexOf(".");
+		String ofheader = ofname.substring(0, idx); 
+		String ext = ofname.substring(idx);
+		
+		long fsize = f.getSize();
+		long ms = System.currentTimeMillis();	
+		String fname = ofheader + "_" + ms + ext;
+		StringBuilder sb = new StringBuilder();
+		sb.append(ofheader);
+		sb.append("_");
+		sb.append(ms);
+		sb.append(ext);
+		String saveFileName = sb.toString();
+		//log.info("ofname: " + ofname + ", ext: " + ext + ", fsize: " + fsize);
+		//log.info("ofname: " + ofname + ", fname: " + fname);
+		//log.info("ofname: " + ofname + ", fname: " + saveFileName);
+		
+		boolean flag = writeFile(f, saveFileName);
+		if(flag) {
+			log.info("파일출력성공");
+		}else {
+			log.info("파일출력실패");
+		}
+		
+		return fname;
+	}
+
+	private boolean writeFile(MultipartFile f, String saveFileName) {
+		//log.info("#service writeFile() f: " + f + ", saveFileName: " + saveFileName);
+		
+		File rDir = new File(FilePath.PROFILE_FILE_STORE);
+		if(!rDir.exists()) {
+			rDir.mkdirs();
+		}
+		
+		FileOutputStream fos = null;
+		try {
+			byte data[] = f.getBytes();
+			fos = new FileOutputStream(FilePath.PROFILE_FILE_STORE + saveFileName);
+			fos.write(data);
+			fos.flush();
+			return true;
+		}catch(IOException ie) {
+			return false;
+		}finally {
+			try {
+				if(fos != null) fos.close();
+			}catch(IOException ie) {
+			}
+		}
+	}
 	
 }
