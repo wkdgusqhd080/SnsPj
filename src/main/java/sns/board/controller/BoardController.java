@@ -107,7 +107,7 @@ public class BoardController {
 		return "board/create_form";
 	}
 	@RequestMapping(value="fileUpload.do")
-	public void fileUpload(Model model, HttpServletResponse response, HttpServletRequest request, @RequestParam("Filedata") MultipartFile Filedata) {
+	public void fileUpload(Model model, HttpServletResponse response, @RequestParam("Filedata") MultipartFile Filedata) {
 	   	SimpleDateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
 	   	String newfilenameTime = df.format(new Date()) + Integer.toString((int) (Math.random()*10));
 	   	
@@ -117,17 +117,20 @@ public class BoardController {
 	   	
 		File f = new File(FilePath.FILE_STORE + sb.toString());
 
-		try { 
+		try {
+			response.setContentType("text/html;charset=UTF-8");
 			Filedata.transferTo(f);
 		   	response.getWriter().write(sb.toString());
+			//response.getWriter().print(sb.toString());
 		} catch (IllegalStateException | IOException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@PostMapping("boardUpload.do")
-	public String boardUpload(HttpServletRequest request, HttpSession session, Model model) {
+	public String boardUpload(HttpServletRequest request, HttpSession session, Model model) throws Exception{
 		String mem_email = getClientEmail(session);
+		//request.setCharacterEncoding("utf-8");
 		String b_content = request.getParameter("b_content");
 		String filename = request.getParameter("filename");
 		String realname = request.getParameter("realname");
@@ -135,10 +138,15 @@ public class BoardController {
     	String[] sizelist = realname.split(",");//파일사이즈
     	String[] ofilelist = filename.split(",");//오리지날파일이름
     	String[] filelist = filesize.split(",");//저장되는파일이름
+    	for(int i = 0; i<=filelist.length-1; i++) {
+    		log.info("#ofilelist: " + ofilelist[i]);
+    		log.info("#filelist: " + filelist[i]);
+    	}
     	BoardListResult boardListResult = boardService.insertBoardS(new InsertBoardVo(mem_email, b_content, ofilelist, filelist, sizelist));
 //    	model.addAttribute("boardListResult", boardListResult);
 //    	return "redirect:/board/my_board_list.do";
     	return "board/board_create_msg";
+    	//return "board/upload_save";
 	}
 	
 	@GetMapping("my_board_list.do")
@@ -185,6 +193,8 @@ public class BoardController {
 		}else {//프사 등록 아닐 시
 			
 		}
+		Member member = boardService.selectMemberS(mem_email);
+		session.setAttribute("loginUser", member);
 		return "board/my_info_msg";
 	}
 	

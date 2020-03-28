@@ -135,7 +135,8 @@ public class BoardServiceImpl implements BoardService {
 
 		for (int i=0; i<insertBoardVo.getOfilelist().length; i++) {
 			if(insertBoardVo.getOfilelist()[i] != "") {
-			log.info("#getOflielist : " + insertBoardVo.getOfilelist()[i]);
+			//log.info("#getOflielist : " + insertBoardVo.getOfilelist()[i]);
+			log.info("#getFlielist : " + insertBoardVo.getFilelist()[i]);
 			boardMapper.insertBoardFile(new Board_File(-1, insertBoardVo.getOfilelist()[i],
 					insertBoardVo.getFilelist()[i], insertBoardVo.getSizelist()[i]+"byte" , b_seq));
 			}
