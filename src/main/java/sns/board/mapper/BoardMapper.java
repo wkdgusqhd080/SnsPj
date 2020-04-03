@@ -14,6 +14,9 @@ import sns.domain.Follow;
 import sns.domain.Member;
 
 public interface BoardMapper {
+	
+	List<Board> selectBoardNew(Map map);
+	
 	List<Board> selectBoard(Map map);
 	List<Board_File> selectBoardFile(long b_seq);
 	List<Board_Reply> selectBoardReply(Map map);

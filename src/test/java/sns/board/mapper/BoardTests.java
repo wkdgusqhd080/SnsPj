@@ -18,6 +18,8 @@ import sns.domain.Board_File;
 import sns.domain.Board_Like;
 import sns.domain.Board_Reply;
 import sns.domain.Member;
+import sns.test.mapper.TestMapper;
+import sns.vo.A;
 import sns.vo.BoardPagingVo;
 import sns.vo.BoardReplyPagingVo;
 @Log4j
@@ -28,9 +30,40 @@ public class BoardTests {
 	@Autowired
 	private BoardMapper mapper;
 	
-	@Autowired
-	private BoardRestMapper boardRestMapper;
 	
+	@Test
+	public void boardNewListTest() {
+		long cp = 1;
+		long ps = 3;
+		String mem_email = "a@naver.com";
+		BoardPagingVo boardPagingVo = new BoardPagingVo(cp, ps);
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("mem_email", mem_email);
+		map.put("startRow", boardPagingVo.getStartRow());
+		map.put("endRow", boardPagingVo.getEndRow());
+		List<Board> new_list = mapper.selectBoardNew(map);
+		log.info("#new_list: " + new_list);
+	}
+	
+//	
+//	@Autowired
+//	private BoardRestMapper boardRestMapper;
+	
+	
+	
+	
+	
+	
+//	@Autowired
+//	private TestMapper tMapper;
+//	
+//	@Test
+//	public void listTest() {
+//		List<A> list = tMapper.selectTest();
+//		log.info(list);
+//		List<A> list2 = tMapper.selectTest2();
+//		log.info(list2);
+//	}
 	/*
 	@Test
 	public void testList() {
@@ -128,7 +161,7 @@ public class BoardTests {
 	@Test
 	public void boardTest() {
 		long cp = 1;
-		long ps = 3;
+		long ps = 5;
 		String mem_email = "a@naver.com";
 		BoardPagingVo boardPagingVo = new BoardPagingVo(cp, ps);
 		Map<String, Object> map = new HashMap<String, Object>();
@@ -147,11 +180,11 @@ public class BoardTests {
 						if(board_file_list.size() != 0) {
 							board_file_List.add(board_file_list);
 						}
-					/*
-					List<Board_Reply> board_reply_list = mapper.selectBoardReply(map);
-						if(board_reply_list.size() != 0) {
-							board_reply_List.add(board_reply_list);
-						}
+					
+//					List<Board_Reply> board_reply_list = mapper.selectBoardReply(map);
+//						if(board_reply_list.size() != 0) {
+//							board_reply_List.add(board_reply_list);
+//						}
 					
 				}
 			}	
@@ -159,7 +192,13 @@ public class BoardTests {
 				log.info("#board_file_List: " + board_file_List);
 				//log.info("#board_reply_List: " + board_reply_List);
 		}
-		*/
+	*/	
+	
+	
+	
+	
+	
+	
 		/*
 	@Test
 	public void boardLikeTest() {
@@ -198,7 +237,7 @@ public class BoardTests {
 		log.info("#list: "+board_reply_list);
 	}
 	*/
-	
+	/*
 	@Test
 	public void searchUserText() {
 		String mem_email = "b";
@@ -207,6 +246,5 @@ public class BoardTests {
 		
 		
 	}
-	
-		
-	}
+	*/
+}

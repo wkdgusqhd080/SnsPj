@@ -5,6 +5,8 @@ import lombok.NoArgsConstructor;
 import java.util.Comparator;
 import java.util.List;
 
+import org.apache.ibatis.type.Alias;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 

@@ -41,7 +41,7 @@ public class BoardServiceImpl implements BoardService {
 		List<Board> boardList = new ArrayList<Board>();
 		boardList = boardMapper.selectBoard(map);
 		boardList = setBoardList(boardList);
-	    //log.info("#boardList: " + boardList);
+	    log.info("#boardList: " + boardList);
 		return new BoardListResult(cp, ps, boardMapper.selectBoardTotalCount(mem_email), boardList);
 	}
 	

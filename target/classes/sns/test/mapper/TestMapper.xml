@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="sns.test.mapper.TestMapper">
+
+	<resultMap type="sns.vo.B" id="B">
+		<id column="B_SEQ" property="b_seq"></id>
+		<result column="B_NAME" property="b_name"></result>
+		<result column="A_SEQ" property="a_seq"></result>
+	</resultMap>
+	
+	<resultMap type="sns.vo.A" id="A">
+		<id column="A_SEQ" property="a_seq"></id>
+		<result column="A_NAME" property="a_name"></result>
+		<collection property="b_list" resultMap="B"></collection>
+	</resultMap>
+	
+	<select id="selectTest" resultMap="A">
+	select a.A_SEQ, a.A_NAME, b.B_SEQ, b.B_NAME, b.A_SEQ 
+	from A a left outer join B b on  a.a_seq = b.a_seq
+	</select>
+	
+	
+	<select id="selectTest2" resultType="A">
+		select * from A
+	</select>
+	
+</mapper>

@@ -12,6 +12,8 @@
    	   <typeAlias alias="Board_File" type="sns.domain.Board_File"/>
    	   <typeAlias alias="Board_Like" type="sns.domain.Board_Like"/>
    	   <typeAlias alias="Board_Reply" type="sns.domain.Board_Reply"/>
+   	   <typeAlias alias="A" type="sns.vo.A"/>
+   	   <typeAlias alias="B" type="sns.vo.B"/>
    </typeAliases>
    
    <mappers>
@@ -19,6 +21,7 @@
    	   <mapper resource="sns/login/mapper/LoginMapper.xml"/>
    	   <mapper resource="sns/board/mapper/BoardMapper.xml"/>
    	   <mapper resource="sns/board/mapper/BoardRestMapper.xml"/>
+   	   <mapper resource="sns/test/mapper/TestMapper.xml"/>
    </mappers>
    
 </configuration>

@@ -118,10 +118,67 @@ where rnum > 0 and rnum <= 3 and
 mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
 
 
+/*
+select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'yyyy-MM-dd'), filelist.BF_SEQ, filelist.BF_OFNAME, filelist.BF_FNAME, filelist.B_SEQ
+from (select ROWNUM rnum, board.* from (select * from board where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board) 
+boardlist 
+left outer join BOARD_FILE filelist ON boardlist.B_SEQ = filelist.B_SEQ
+where rnum > 0 and rnum <= 3 and 
+mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc;
+
+
+select b.B_SEQ B_SEQ,
+b.B_CONTENT B_CONTENT,
+b.MEM_EMAIL MEM_EMAIL,
+b.B_RDATE B_RDATE,
+f.BF_SEQ BF_SEQ,
+f.BF_OFNAME BF_OFNAME,
+f.BF_FNAME BF_FNAME,
+f.BF_SIZE BF_SIZE,
+f.B_SEQ B_SEQ_0,
+m.MEM_EMAIL MEM_EMAIL_1,
+m.MEM_PWD MEM_PWD,
+m.MEM_RDATE MEM_RDATE,
+m.MEM_PROFILE MEM_PROFILE,
+m.MEM_STATE MEM_STATE,
+bl.*,
+br.*
+from (select ROWNUM rnum, board.* from(select * from board where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board) b 
+left outer join board_file f on b.b_seq = f.b_seq 
+left outer join member m on b.mem_email = m.mem_email
+left outer join board_like bl on bl.b_seq = b.b_seq
+left outer join board_reply br on br.b_seq = b.b_seq
+where rnum > 0 and rnum <=3
+;
+*/
+
+select b.B_SEQ B_SEQ,
+b.B_CONTENT B_CONTENT,
+b.MEM_EMAIL MEM_EMAIL,
+b.B_RDATE B_RDATE,
+f.BF_SEQ BF_SEQ,
+f.BF_FNAME BF_FNAME,
+f.B_SEQ BF_B_SEQ,
+m.MEM_PROFILE MEM_PROFILE,
+bl.b_seq BL_B_SEQ,
+bl.mem_email BL_MEM_EMAIL,
+br.brp_seq BRP_SEQ,
+br.mem_email BRP_MEM_MAIL
+from (select ROWNUM rnum, board.* from(select * from board where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board) b 
+left outer join board_file f on b.b_seq = f.b_seq 
+left outer join member m on b.mem_email = m.mem_email
+left outer join board_like bl on bl.b_seq = b.b_seq
+left outer join board_reply br on br.b_seq = b.b_seq
+where rnum > 0 and rnum <=3
+;
 
 
 
 
+
+select * from board left outer join board_file on board.b_seq = board_file.b_seq ;
+
+select * from board_file;
 
 
 --select B_SEQ, B_CONTENT, MEM_EMAIL, B_RDATE from (select ROWNUM rnum, aa.* from (select * from BOARD where MEM_EMAIL = 'a@naver.com' order by B_RDATE desc) aa) where rnum > 0 and rnum <= 3;
@@ -176,7 +233,11 @@ insert into BOARD_LIKE values('a@naver.com', 1);
 insert into BOARD_LIKE values('b@naver.com', 3);
 
 
-select * from board_like where mem_email = 'a@naver.com' and b_seq = 5;
+select * from board_like;
+
+
+
+
 
 create table BOARD_REPLY(
 BRP_SEQ number constraint REPLY_PK primary key,
@@ -233,4 +294,60 @@ commit;
 select boardreply.* from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
 
 select boardreply.brp_seq, boardreply.brp_content, TO_CHAR(boardreply.brp_rdate, 'YYYY-MM-DD') as brp_rdate, boardreply.mem_email, boardreply.b_seq from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = 1) br) boardreply where rnum > 0 and rnum <= 3 order by BRP_RDATE desc;
+
+
+
+
+delete from B;
+delete from A;
+drop table B;
+drop table A;
+
+create table A (
+a_seq number constraint A_PK primary key,
+a_name varchar2(100)
+);
+
+insert into A values(1, '이름1');
+insert into A values(2, '이름2');
+
+create table B(
+b_seq number constraint B_PK primary key,
+b_name varchar2(100),
+a_seq number constraint B_FK references A(a_seq) on delete cascade
+
+);
+
+insert into B values(1, '이름1', 1);
+insert into B values(2, '이름2', 1);
+insert into B values(3, '이름3', 1);
+
+commit;
+
+select * from A left join B on  A.a_seq = B.a_seq;
+
+
+select A.A_SEQ, A.A_NAME, B.B_SEQ, B.B_NAME, B.A_SEQ from A left join B on  A.a_seq = B.a_seq;
+
+
+	select a.A_SEQ, a.A_NAME, b.B_SEQ, b.B_NAME, b.A_SEQ 
+	from A a left outer join B b on  a.a_seq = b.a_seq;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 

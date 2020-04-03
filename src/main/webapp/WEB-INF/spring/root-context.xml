@@ -44,6 +44,9 @@
 		<context:component-scan base-package="sns.board.mapper"/>
 		<mybatis-spring:scan base-package="sns.board.mapper"/>
 		
+
+		<mybatis-spring:scan base-package="sns.test.mapper"/>
+		
 		
 		
 		<context:annotation-config></context:annotation-config>

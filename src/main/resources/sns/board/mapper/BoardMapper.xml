@@ -3,6 +3,68 @@
   PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="sns.board.mapper.BoardMapper">
+	<!-- 
+	<resultMap type="sns.domain.Board" id="Board">
+		<id column="B_SEQ" property="b_seq"></id>
+		<result column="B_CONTENT" property="b_content"></result>
+		<result column="MEM_EMAIL" property="mem_email"></result>
+		<result column="B_RDATE" property="b_rdate"></result>
+		<result column="MEM_PROFILE" property="mem_profile"></result>
+		<collection resultMap="Board_Like" property="board_like_list"></collection>
+		<collection resultMap="Board_File" property="board_file_list"></collection>
+	</resultMap>
+	
+	<resultMap type="sns.domain.Board_File" id="Board_File">
+		<id column="BF_SEQ" property="bf_seq"></id>
+		<result column="BF_OFNAME" property="bf_ofname"></result>
+		<result column="BF_FNAME" property="bf_fname"></result>
+		<result column="BF_SIZE" property="bf_size"></result>
+		<result column="B_SEQ" property="b_seq"></result>
+	</resultMap>
+	
+	<resultMap type="sns.domain.Board_Like" id="Board_Like">
+		<result column="MEM_EMAIL" property="mem_email"></result>
+		<result column="B_SEQ" property="b_seq"></result>
+	</resultMap>
+	
+	<resultMap type="sns.domain.Board_Reply" id="Board_Reply">
+		<id column="BRP_SEQ" property="brp_seq"></id>
+		<result column="BRP_CONTENT" property="brp_content"></result>
+		<result column="BRP_RDATE" property="brp_rdate"></result>
+		<result column="MEM_EMAIL" property="mem_email"></result>
+		<result column="B_SEQ" property="b_seq"></result>
+	</resultMap>
+
+	<select id="selectBoardNew" parameterType="hashmap" resultMap="Board">
+	<![CDATA[
+		select b.B_SEQ,
+		b.B_CONTENT,
+		b.MEM_EMAIL,
+		b.B_RDATE,
+		f.BF_SEQ,
+		f.BF_FNAME,
+		f.B_SEQ,
+		m.MEM_PROFILE,
+		bl.b_seq,
+		bl.mem_email,
+		br.brp_seq,
+		br.mem_email
+		from (select ROWNUM rnum, board.* from
+		(select * from board where mem_email in 
+		(select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board)
+		 b 
+		left outer join board_file f on b.b_seq = f.b_seq 
+		left outer join member m on b.mem_email = m.mem_email
+		left outer join board_like bl on bl.b_seq = b.b_seq
+		left outer join board_reply br on br.b_seq = b.b_seq
+		where rnum > #{startRow} and rnum <=#{endRow} and 
+		b.mem_email in (select flr_email from follow where mem_email = 'a@naver.com') 
+		order by b_rdate desc
+	]]>
+	</select>
+	-->
+	
+
 	<select id="selectBoard" parameterType="hashmap" resultType="Board">
 	<!--  
 		<![CDATA[
@@ -10,7 +72,10 @@
 		]]>
 	-->
 			<![CDATA[
-			select boardlist.B_SEQ, boardlist.B_CONTENT, boardlist.MEM_EMAIL, TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
+			select boardlist.B_SEQ, 
+			boardlist.B_CONTENT, 
+			boardlist.MEM_EMAIL, 
+			TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
 			from (select ROWNUM rnum, board.* from (select * from BOARD where 
 			mem_email in (select flr_email from follow where mem_email = #{mem_email})
 			order by B_RDATE desc) board) boardlist 
@@ -20,18 +85,14 @@
 			]]>
 	</select>
 	
+	
+	
 	<select id="selectBoardFile" parameterType="long" resultType="Board_File">
 		<![CDATA[
 			SELECT * FROM BOARD_FILE WHERE B_SEQ = #{b_seq} ORDER BY BF_SEQ
 		]]>
 	</select>
-	
-	<select id="selectBoardReply" parameterType="hashmap" resultType="Board_Reply">
-		<![CDATA[
-			select * from (select ROWNUM rnum, br.* from (select * from BOARD_REPLY where B_SEQ = #{b_seq}) br) where rnum > #{startRow} and rnum <= #{endRow} order by BRP_RDATE desc
-		]]>
-	</select>
-	
+		
 	<select id="selectMemberProfile" parameterType="String" resultType="String">
 		<![CDATA[
 			SELECT MEM_PROFILE FROM MEMBER WHERE MEM_EMAIL = #{mem_email}
@@ -108,5 +169,6 @@
 	<update id="updateProfileImage" parameterType="Member">
 		update MEMBER set MEM_PROFILE = #{mem_profile} where MEM_EMAIL = #{mem_email}
 	</update>
-
+	
+	
 </mapper>
