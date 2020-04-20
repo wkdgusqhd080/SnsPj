@@ -160,16 +160,16 @@ f.BF_SEQ BF_SEQ,
 f.BF_FNAME BF_FNAME,
 f.B_SEQ BF_B_SEQ,
 m.MEM_PROFILE MEM_PROFILE,
-bl.b_seq BL_B_SEQ,
-bl.mem_email BL_MEM_EMAIL,
+bl.b_seq B_SEQ,
+bl.mem_email MEM_EMAIL,
 br.brp_seq BRP_SEQ,
-br.mem_email BRP_MEM_MAIL
+br.mem_email MEM_MAIL
 from (select ROWNUM rnum, board.* from(select * from board where mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc) board) b 
 left outer join board_file f on b.b_seq = f.b_seq 
 left outer join member m on b.mem_email = m.mem_email
 left outer join board_like bl on bl.b_seq = b.b_seq
 left outer join board_reply br on br.b_seq = b.b_seq
-where rnum > 0 and rnum <=3
+where rnum > 0 and rnum <=3 and b.mem_email in (select flr_email from follow where mem_email = 'a@naver.com') order by b_rdate desc
 ;
 
 
