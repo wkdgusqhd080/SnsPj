@@ -63,27 +63,53 @@
 	]]>
 	</select>
 	-->
-	
-
-	<select id="selectBoard" parameterType="hashmap" resultType="Board">
+		
+	<select id="selectBoard" parameterType="java.util.hashmap" resultType="Board">
+		SELECT
+				boardlist.B_SEQ, 
+				boardlist.B_CONTENT, 
+				boardlist.MEM_EMAIL, 
+				TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') AS B_RDATE 
+		  FROM (SELECT 
+						ROWNUM rnum, board.* 
+				  FROM 
+					   (SELECT * 
+					      FROM BOARD 
+					     WHERE MEM_EMAIL 
+						IN (SELECT flr_email
+							      FROM follow 
+							     WHERE mem_email = #{mem_email})
+		      ORDER BY B_RDATE DESC) board) boardlist
+			 WHERE <![CDATA[rnum > #{startRow}]]>
+			   AND <![CDATA[rnum <= #{endRow}]]>
+			   AND MEM_EMAIL 
+			    IN (SELECT flr_email 
+				  FROM follow 
+				 WHERE mem_email = #{mem_email}) 
+	  ORDER BY B_RDATE DESC
+		
 	<!--  
+	<![CDATA[
+		select * from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
+	]]>
+
 		<![CDATA[
-			select * from (select ROWNUM rnum, board.* from (select * from BOARD order by B_RDATE desc) board) where rnum > #{startRow} and rnum <= #{endRow} and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) order by B_RDATE desc
+		select boardlist.B_SEQ, 
+		boardlist.B_CONTENT, 
+		boardlist.MEM_EMAIL, 
+		TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
+		from (select ROWNUM rnum, board.* from (select * from BOARD where 
+		mem_email in (select flr_email from follow where mem_email = #{mem_email})
+		order by B_RDATE desc) board) boardlist 
+		where rnum > #{startRow} and rnum <= #{endRow} 
+		and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) 
+		order by B_RDATE desc
 		]]>
+
 	-->
-			<![CDATA[
-			select boardlist.B_SEQ, 
-			boardlist.B_CONTENT, 
-			boardlist.MEM_EMAIL, 
-			TO_CHAR(boardlist.B_RDATE, 'YYYY-MM-DD') as B_RDATE 
-			from (select ROWNUM rnum, board.* from (select * from BOARD where 
-			mem_email in (select flr_email from follow where mem_email = #{mem_email})
-			order by B_RDATE desc) board) boardlist 
-			where rnum > #{startRow} and rnum <= #{endRow} 
-			and MEM_EMAIL in (select FLR_EMAIL from FOLLOW where MEM_EMAIL = #{mem_email} ) 
-			order by B_RDATE desc
-			]]>
-	</select>
+</select>
+	
+	
 	
 	
 	
